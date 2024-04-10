@@ -27,7 +27,14 @@ export const SpeechRecognitionIndex = () => {
             console.log('event', event);
             setText(event.results[0][0].transcript);
             let data = event.results[0][0].transcript;
-            const response = await postTaskData(data);
+
+             // Guardar el texto como un archivo WAV
+             const blob = new Blob([data], { type: 'audio/wav' });
+             const formData = new FormData();
+             formData.append('audio', blob, 'speech.wav');
+
+
+            const response = await postTaskData(formData);
             console.log('respuesta recibida del backend', response);
             recognition.stop();
             setIsListening(false);

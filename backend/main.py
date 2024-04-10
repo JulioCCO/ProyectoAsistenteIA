@@ -20,6 +20,24 @@ def hello_world():
 @app.route("/postTask", methods=['POST'])
 def postTask():
     try:
+        if 'audio' not in request.files:
+            return jsonify({'error': 'No se ha proporcionado ningún archivo de audio'})
+
+        audio_file = request.files['audio']
+        if audio_file.filename == '':
+            return jsonify({'error': 'El archivo de audio no tiene nombre'})
+
+        # Guarda el archivo de audio
+        audio_file.save('C:/ProyectoIA/backend/audios/' + audio_file.filename)
+
+        return jsonify({'message': 'Archivo de audio guardado correctamente', 'filename': audio_file.filename})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+"""
+@app.route("/postTask", methods=['POST'])
+def postTask():
+    try:
         data = request.data.decode('utf-8')
         # Procesa el string recibido, por ejemplo, imprímelo
         print('data:', data)
@@ -28,6 +46,8 @@ def postTask():
     except Exception as e:
         # Maneja cualquier excepción que pueda ocurrir
         return jsonify({'error': str(e)})
+"""
+
 
 
 if __name__ == "__main__":

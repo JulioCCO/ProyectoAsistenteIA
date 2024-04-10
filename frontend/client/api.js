@@ -15,6 +15,7 @@ export const getBackendData = async () => {
     }
 };
 
+/*
 export const postTaskData = async (dataTosend) => {
     try {
         console.log(dataTosend)
@@ -26,5 +27,22 @@ export const postTaskData = async (dataTosend) => {
         throw new Error(`Error fetching data from the backend: ${error.message}`);
     }
 }
+*/
 
+export const postTaskData = async (file) => {
+    try {
+        const formData = new FormData();
+        formData.append('audio', file);
+
+        const request = await axios.post(`${apiUrl}/postTask`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        console.log('request: ', request);
+        return request;
+    } catch (error) {
+        throw new Error(`Error fetching data from the backend: ${error.message}`);
+    }
+}
 

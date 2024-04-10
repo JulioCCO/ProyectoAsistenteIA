@@ -15,4 +15,16 @@ export const getBackendData = async () => {
     }
 };
 
+export const postTaskData = async (dataTosend) => {
+    try {
+        console.log(dataTosend)
+        const requestData = { data: dataTosend };
+        const request = await axios.post(`${apiUrl}/postTask`, requestData);
+        console.log('request: ', request);
+        return request;
+    } catch (error) {
+        throw new Error(`Error fetching data from the backend: ${error.message}`);
+    }
+}
+
 

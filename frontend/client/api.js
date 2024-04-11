@@ -29,18 +29,17 @@ export const postTaskData = async (dataTosend) => {
 }
 */
 
-export const postTaskData = async (file) => {
+export const sendBlob = async (file) => {
     try {
         const formData = new FormData();
         formData.append('audio', file);
 
-        const request = await axios.post(`${apiUrl}/postTask`, formData, {
+        await axios.post(`${apiUrl}/procesar_audio`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
-        console.log('request: ', request);
-        return request;
+        console.log('Audio enviado al backend');
     } catch (error) {
         throw new Error(`Error fetching data from the backend: ${error.message}`);
     }

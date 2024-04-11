@@ -1,7 +1,10 @@
 
-
+import whisper
+import tempfile
+import os
 from flask import Flask, redirect, jsonify, request
 from flask_cors import CORS
+
 
 app = Flask(__name__)
 CORS(app)
@@ -17,7 +20,7 @@ def hello_world():
     return "Hola mundo"
 
 
-@app.route("/postTask", methods=['POST'])
+@app.route("/procesar_audio", methods=['POST'])
 def postTask():
     try:
         if 'audio' not in request.files:
@@ -28,25 +31,39 @@ def postTask():
             return jsonify({'error': 'El archivo de audio no tiene nombre'})
 
         # Guarda el archivo de audio
-        audio_file.save('C:/ProyectoIA/backend/audios/' + audio_file.filename)
+        #logica de procesamiento de consulta asincrono, para que el sistema espere la respuesta
+        audio_file.save('E:/Proyectos/AIP1/ProyectoAsistenteIA/backend/audios/' + audio_file.filename)
 
+        transcribe_audio(audio_file)
         return jsonify({'message': 'Archivo de audio guardado correctamente', 'filename': audio_file.filename})
     except Exception as e:
         return jsonify({'error': str(e)})
 
-"""
-@app.route("/postTask", methods=['POST'])
-def postTask():
+
+def transcribe_audio(audio_file):
     try:
-        data = request.data.decode('utf-8')
-        # Procesa el string recibido, por ejemplo, imprímelo
-        print('data:', data)
-        # Luego, puedes realizar cualquier operación que desees con el string
-        return jsonify({'message': 'Datos actualizados correctamente', 'data': data})
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_file.write(audio_file.read())
+            temp_file_path = temp_file.name
+
+        # Transcribe the content of the audio
+        model = whisper.load_model("base")
+        result = model.transcribe(temp_file_path)
+
+        # Extract the transcription
+        transcription = result["text"]
+
+        # Clean up the temporary file
+        os.unlink(temp_file_path)
+
+        # Print transcription for debugging
+        print(transcription)
+
+        return transcription
     except Exception as e:
-        # Maneja cualquier excepción que pueda ocurrir
-        return jsonify({'error': str(e)})
-"""
+        # Handle exceptions and print error message
+        print(f"Error processing audio: {e}")
+        return None
 
 
 

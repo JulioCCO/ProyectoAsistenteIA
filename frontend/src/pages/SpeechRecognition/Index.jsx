@@ -1,72 +1,83 @@
-import { useState } from "react";
-import { postTaskData } from "../../../client/api";
-
-
-let recognition = null;
-
-if ('webkitSpeechRecognition' in window) {
-    recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
-    recognition.lang = 'en-EN';
-    console.log('El navegador soporta la API de reconocimiento de voz de WebKit.')
-} else {
-    console.log('El navegador no soporta la API de reconocimiento de voz de WebKit.');
-}
+import { useEffect, useState } from "react";
+import { sendBlob } from "../../../client/api";
+import { blobToWav } from "../../utils/Utils";
 
 export const SpeechRecognitionIndex = () => {
+    const [audioURL, setAudioURL] = useState(null);
+    const [isRecording, setIsRecording] = useState(false);
+    const [mediaRecorderState, setMediaRecorderState] = useState(null);
 
-    const [text, setText] = useState('');
-    const [isListening, setIsListening] = useState(false);
+    useEffect(() => {
 
-    const startListeningRecognition = () => {
-        setText('');
-        setIsListening(true);
-        recognition.start();
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            console.log('mediaDevices supported..')
 
-        recognition.onresult = async (event) => {
-            console.log('event', event);
-            setText(event.results[0][0].transcript);
-            let data = event.results[0][0].transcript;
+            navigator.mediaDevices
+                .getUserMedia({ audio: true })
+                .then(stream => {
+                    const mediaRecorder = new MediaRecorder(stream);
+                    setMediaRecorderState(mediaRecorder);
+                    console.log('mediaRecorder', mediaRecorder);
 
-             // Guardar el texto como un archivo WAV
-             const blob = new Blob([data], { type: 'audio/wav' });
-             const formData = new FormData();
-             formData.append('audio', blob, 'speech.wav');
+                    let chunks = [];
+                    mediaRecorder.ondataavailable = e => {
+                        chunks.push(e.data);
+                    }
 
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'audio/wav' });
+                        console.log('blob', blob)
+                        const audioURL = window.URL.createObjectURL(blob);
+                        console.log('audioURL', audioURL)
+                        setAudioURL(blob);
+                        chunks = []; // Clear chunks for next recording
+                        // Ejemplo de uso:
+                        blobToWav(blob).then((wavBlob) => {
+                            // Ahora puedes usar el archivo .wav (wavBlob) como desees
+                            console.log('Archivo .wav:', wavBlob);
+                            sendBlobToBackend(wavBlob);
+                        });
 
-            const response = await postTaskData(formData);
-            console.log('respuesta recibida del backend', response);
-            recognition.stop();
-            setIsListening(false);
+                    }
+                })
+                .catch((err) => {
+                    console.error(`The following getUserMedia error occurred: ${err}`);
+                });
+        }
+    }, []);
+
+    const sendBlobToBackend = async (audioBlob) => {
+        try {
+            await sendBlob(audioBlob)
+        } catch (error) {
+            console.error('Error al enviar el audio al backend:', error);
         }
     }
-    
-    const stopListeningRecognition = () => {
-        setIsListening(false);
-        recognition.stop();
+    const record = () => {
+        console.log('start record');
+        setAudioURL(''); // Clear current audio URL when starting a new recording
+        mediaRecorderState.start();
+        setIsRecording(true);
     }
 
-    const speakText = () => {
-        const utterance = new SpeechSynthesisUtterance(text);
-
-        // Puedes especificar una voz concreta
-        const voices = window.speechSynthesis.getVoices();
-        console.log(voices)
-        utterance.voice = voices[2]//voices.find(voice => voice.lang === 'en-US');
-
-        // Ajusta la velocidad de habla (valor predeterminado: 1)
-        utterance.rate = 1.5; // Aumenta la velocidad para que suene más fluido
-
-        speechSynthesis.speak(utterance);
+    const stopRecording = () => {
+        console.log('stop record');
+        mediaRecorderState.stop();
+        setIsRecording(false);
     }
 
     return (
         <div>
-            <button onClick={() => startListeningRecognition()}>Start listening</button>
-            {isListening === true && <div>Your browser is currently listening</div>}
-            <div><p>{text}</p></div>
-            <button onClick={() => stopListeningRecognition()}>Stop listening</button>
-            <button onClick={() => speakText()}>Speak text</button>
+
+            <button type="button" onClick={isRecording ? stopRecording : record}>
+
+                {isRecording ? "Stop Record" : "Start Record"}
+            </button>
+            {audioURL && (
+                <div>
+                    <audio controls src={audioURL}></audio>
+                </div>
+            )}
         </div>
     )
 }

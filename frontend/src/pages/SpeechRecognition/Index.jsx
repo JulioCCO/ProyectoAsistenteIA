@@ -48,7 +48,8 @@ export const SpeechRecognitionIndex = () => {
 
     const sendBlobToBackend = async (audioBlob) => {
         try {
-            await sendBlob(audioBlob)
+            const response = await sendBlob(audioBlob)
+            console.log('response', response);
         } catch (error) {
             console.error('Error al enviar el audio al backend:', error);
         }

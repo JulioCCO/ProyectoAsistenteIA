@@ -23,18 +23,21 @@ def hello_world():
 @app.route("/procesar_audio", methods=['POST'])
 def postTask():
     try:
+
         if 'audio' not in request.files:
+            print('No se ha proporcionado ningún archivo de audio')
             return jsonify({'error': 'No se ha proporcionado ningún archivo de audio'})
 
         audio_file = request.files['audio']
         if audio_file.filename == '':
+            print('El archivo de audio no tiene nombre')
             return jsonify({'error': 'El archivo de audio no tiene nombre'})
 
         # Guarda el archivo de audio
         #logica de procesamiento de consulta asincrono, para que el sistema espere la respuesta
-        audio_file.save('E:/Proyectos/AIP1/ProyectoAsistenteIA/backend/audios/' + audio_file.filename)
-
+        print('entrando a la transcripcion')
         transcribe_audio(audio_file)
+        audio_file.save('E:/Proyectos/AIP1/ProyectoAsistenteIA/backend/audios/' + audio_file.filename)
         return jsonify({'message': 'Archivo de audio guardado correctamente', 'filename': audio_file.filename})
     except Exception as e:
         return jsonify({'error': str(e)})

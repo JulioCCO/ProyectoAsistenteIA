@@ -31,17 +31,20 @@ export const postTaskData = async (dataTosend) => {
 
 export const sendBlob = async (file) => {
     try {
-        const formData = new FormData();
-        formData.append('audio', file);
 
-        await axios.post(`${apiUrl}/procesar_audio`, formData, {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await axios.post(`${apiUrl}/audioTask`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data' // Establece el tipo de contenido como formulario multipart
             }
         });
+        console.log('response', response);
         console.log('Audio enviado al backend');
     } catch (error) {
-        throw new Error(`Error fetching data from the backend: ${error.message}`);
+        console.error('Error al enviar el archivo al backend:', error);
+        throw new Error(`Error al enviar el archivo al backend: ${error.message}`);
     }
 }
 

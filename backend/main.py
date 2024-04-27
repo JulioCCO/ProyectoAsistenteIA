@@ -1,10 +1,20 @@
-
-import whisper
-import tempfile
+import io
 import os
-from flask import Flask, redirect, jsonify, request
+import openai
+import whisper
+from openai import OpenAI
+from flask import Flask, redirect, request
 from flask_cors import CORS
 
+# Abrir el archivo key.txt en modo lectura
+with open('key.txt', 'r') as f:
+    # Leer la primera línea y quitar espacios en blanco adicionales
+    key_value = f.readline().strip()
+
+# Ahora key_value contendrá el valor de la clave
+print("Valor de la clave:", key_value)
+
+openai.api_key = key_value
 
 app = Flask(__name__)
 CORS(app)
@@ -20,60 +30,71 @@ def hello_world():
     return "Hola mundo"
 
 
-@app.route("/procesar_audio", methods=['POST'])
-def postTask():
+@app.route("/audioTask", methods=['POST'])
+def getAudioTask():
+    if request.method == 'POST':
+        try:
+            # Verificar si se envió un archivo
+            if 'file' not in request.files:
+                return 'No se envió ningún archivo', 400
+
+            # Obtener el archivo enviado
+            audio_file = request.files['file']
+
+            #print('\nrequest.files: ', request.files)
+            #print('\naudio_file: ', audio_file)
+
+            audio_file.save(f'audios/{audio_file.filename}.mp3')
+
+            # Devolver una respuesta exitosa si es necesario
+            path = "E:/Proyectos/ProyectoIA/backend/audios/blob.mp3"
+            print('path: ', path)
+            transcribe_audio(path)
+
+            return 'Archivo de audio recibido correctamente', 200
+        except Exception as e:
+            # Manejar cualquier error que pueda ocurrir durante el procesamiento del archivo
+            return f'Error al procesar el archivo: {str(e)}', 500
+
+
+def enruter(task):
+    if task.find('pokemon'):
+        print('frontend pokemon')
+    print(task)
+
+
+def transcribe_audio(audio_file_path):
+    """
+            with open(audio_file_path, 'rb') as audio:
+            transcript = openai.audio.transcriptions.create(
+                model='whisper-1',
+                file=audio,
+                response_format='text',
+                language='es-ES'
+            )
+            print(transcript)
+            """
     try:
 
-        if 'audio' not in request.files:
-            print('No se ha proporcionado ningún archivo de audio')
-            return jsonify({'error': 'No se ha proporcionado ningún archivo de audio'})
-
-        audio_file = request.files['audio']
-        if audio_file.filename == '':
-            print('El archivo de audio no tiene nombre')
-            return jsonify({'error': 'El archivo de audio no tiene nombre'})
-
-        # Guarda el archivo de audio
-        #logica de procesamiento de consulta asincrono, para que el sistema espere la respuesta
-        print('entrando a la transcripcion')
-        transcribe_audio(audio_file)
-        audio_file.save('E:/Proyectos/AIP1/ProyectoAsistenteIA/backend/audios/' + audio_file.filename)
-        return jsonify({'message': 'Archivo de audio guardado correctamente', 'filename': audio_file.filename})
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
-
-def transcribe_audio(audio_file):
-    try:
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            temp_file.write(audio_file.read())
-            temp_file_path = temp_file.name
-
-        # Transcribe the content of the audio
         model = whisper.load_model("base")
-        result = model.transcribe(temp_file_path)
+        result = model.transcribe(audio_file_path)
 
         # Extract the transcription
         transcription = result["text"]
 
-        # Clean up the temporary file
-        os.unlink(temp_file_path)
-
         # Print transcription for debugging
         print(transcription)
-
-        return transcription
+        if os.path.exists(audio_file_path):
+            # Eliminar el archivo
+            os.remove(audio_file_path)
+            print(f"El archivo {audio_file_path} ha sido eliminado correctamente.")
+        else:
+            print(f"El archivo {audio_file_path} no existe.")
     except Exception as e:
-        # Handle exceptions and print error message
-        print(f"Error processing audio: {e}")
+        # Manejar excepciones e imprimir el mensaje de error
+        print(f"Error processing transcription: {e}")
         return None
-
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
-

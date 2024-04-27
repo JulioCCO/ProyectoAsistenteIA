@@ -1,10 +1,20 @@
-from typing import Any
-
-import whisper
-import tempfile
+import io
 import os
-from flask import Flask, redirect, jsonify, request
+import openai
+import whisper
+from openai import OpenAI
+from flask import Flask, redirect, request
 from flask_cors import CORS
+
+# Abrir el archivo key.txt en modo lectura
+with open('key.txt', 'r') as f:
+    # Leer la primera línea y quitar espacios en blanco adicionales
+    key_value = f.readline().strip()
+
+# Ahora key_value contendrá el valor de la clave
+print("Valor de la clave:", key_value)
+
+openai.api_key = key_value
 
 app = Flask(__name__)
 CORS(app)
@@ -30,15 +40,17 @@ def getAudioTask():
 
             # Obtener el archivo enviado
             audio_file = request.files['file']
-            print('request.files', request.files)
-            print('audio_file', audio_file)
-            # Realizar alguna operación con el archivo, como guardarlo en el servidor
-            # Por ejemplo, para guardarlo en una carpeta llamada "uploads" en el directorio actual:
-            audio_file.save(f'audios/{audio_file.filename}')
+
+            #print('\nrequest.files: ', request.files)
+            #print('\naudio_file: ', audio_file)
+
+            audio_file.save(f'audios/{audio_file.filename}.mp3')
 
             # Devolver una respuesta exitosa si es necesario
-            text = transcribe_audio(audio_file)
-            #enruter(text)
+            path = "E:/Proyectos/ProyectoIA/backend/audios/blob.mp3"
+            print('path: ', path)
+            transcribe_audio(path)
+
             return 'Archivo de audio recibido correctamente', 200
         except Exception as e:
             # Manejar cualquier error que pueda ocurrir durante el procesamiento del archivo
@@ -51,50 +63,38 @@ def enruter(task):
     print(task)
 
 
-def transcribe_audio(audio_file):
+def transcribe_audio(audio_file_path):
     """
-    Transcribes the audio file.
-
-    This function takes an audio file and transcribes its content
-    using a speech-to-text model. It saves the audio file to a
-    temporary file, transcribes it, and returns the transcription.
-
-    Parameters:
-    - audio_file: Audio file to transcribe.
-
-    Returns:
-    - transcription (str): Transcription of the audio file.
-    """
+            with open(audio_file_path, 'rb') as audio:
+            transcript = openai.audio.transcriptions.create(
+                model='whisper-1',
+                file=audio,
+                response_format='text',
+                language='es-ES'
+            )
+            print(transcript)
+            """
     try:
-        # Save the audio file to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            temp_file.write(audio_file.read())
-            temp_file_path = temp_file.name
 
-        # Transcribe the content of the audio
         model = whisper.load_model("base")
-        result = model.transcribe(temp_file_path)
+        result = model.transcribe(audio_file_path)
 
         # Extract the transcription
         transcription = result["text"]
 
-        # Clean up the temporary file
-        os.unlink(temp_file_path)
-
         # Print transcription for debugging
         print(transcription)
-
-        return transcription
-
+        if os.path.exists(audio_file_path):
+            # Eliminar el archivo
+            os.remove(audio_file_path)
+            print(f"El archivo {audio_file_path} ha sido eliminado correctamente.")
+        else:
+            print(f"El archivo {audio_file_path} no existe.")
     except Exception as e:
-        # Handle exceptions and print error message
+        # Manejar excepciones e imprimir el mensaje de error
         print(f"Error processing transcription: {e}")
         return None
 
+
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
-

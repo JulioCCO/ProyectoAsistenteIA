@@ -7,20 +7,23 @@ export const App = () => {
 
   const [permissionsMicrophone, setPermissionsMicrophone] = useState('denied');
   const [avaibleAudioDevices, setAvaibleAudioDevices] = useState([]);
-  const [selectedAudioDevice, setSelectedAudioDevice] = useState('');
+  const [selectedAudioDevice, setSelectedAudioDevice] = useState(undefined);
   const [isRecording, setIsRecording] = useState(false);
   const [savedAudios, setSavedAudios] = useState([]);
   const [mediaRecorder, setMediaRecorder] = useState(undefined);
-  //const audio = document.querySelector("audio");
+  const [taskTranscription, setTaskTranscription] = useState(undefined); 
+
   let globalMediaRecorder = undefined;
 
   const sendBlobToBackend = async (blob) => {
 
     try {
-      console.log('sendBlobToBackend: blob', blob)
-      await sendBlob(blob)
+
+      let data = await sendBlob(blob);
+      setTaskTranscription(data);
     } catch (error) {
       console.error('Error al enviar el audio al backend:', error);
+      throw new Error(`Error al enviar el audio al backend:: ${error.message}`);
     }
 
   }
@@ -50,10 +53,6 @@ export const App = () => {
     }
   }
 
-  function handleClickSeletedAudioDevice(id) {
-    setSelectedAudioDevice(id);
-  }
-
   function handleClickStartRecord() {
     if (selectedAudioDevice) {
       setIsRecording(true);
@@ -61,7 +60,6 @@ export const App = () => {
 
       navigator.mediaDevices.getUserMedia({ audio: audio, video: false }).then((stream) => {
         const options = { mimeType: 'audio/webm' };
-        MediaRecorder.isTypeSupported(options) ? console.log('mimeType supported ', options) : console.log('mimeType No supported ', options);
         let recordedChunks = [];
         globalMediaRecorder = new MediaRecorder(stream, options)
 
@@ -90,16 +88,16 @@ export const App = () => {
 
   useEffect(() => {
     if (isRecording === false && savedAudios.length > 0) {
-      console.log('\nsavedAudios', savedAudios)
-      console.log('\nsavedAudios[0][0]', savedAudios[0][0])
-      sendBlobToBackend(savedAudios[0][0]);
+      let largo = savedAudios.length - 1;
+      if (largo < 0) largo = 0;
+      sendBlobToBackend(savedAudios[largo][0]);
     }
   }, [isRecording, savedAudios])
 
 
   useEffect(() => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      console.log('mediaDevices supported..')
+      console.log('media devices supported..')
       navigator.mediaDevices
         .getUserMedia({ audio: true })
     }
@@ -114,41 +112,44 @@ export const App = () => {
 
   }, [])
 
+  useEffect(() => {
+    if (taskTranscription !== undefined) console.log('useEffect: taskTranscription', taskTranscription);
+  }, [taskTranscription]);
+
 
   useEffect(() => {
-    console.log('useEffect: selectedAudioDevice', selectedAudioDevice);
+    if (selectedAudioDevice !== undefined) console.log('useEffect: selectedAudioDevice', selectedAudioDevice);
   }, [selectedAudioDevice]);
-
-  useEffect(() => {
-    console.log('useEffect: savedAudios', savedAudios);
-  }, [savedAudios]);
-
+  /*
+    useEffect(() => {
+      console.log('useEffect: savedAudios', savedAudios);
+    }, [savedAudios]);
+  */
   return (
 
     <div>
-
       {permissionsMicrophone === 'granted' && (
-        <div>
-          <p>Devices</p>
-          {avaibleAudioDevices.map((device) => (
-            <button style={{ width: '100%', margin: '4px' }} key={device.id} onClick={() => handleClickSeletedAudioDevice(device.id)} >
-              <p>{`audio device name: ${device.name}`}</p>
-              <p>{`audio device id: ${device.id}`}</p>
-            </button>
-          ))}
-        </div>
+        <label>
+          Seleccione un dispositivo de audio:
+          <select name="selectedDevice"
+            value={selectedAudioDevice}
+            onChange={e => setSelectedAudioDevice(e.target.value)} // ... and update the state variable on any change!
+          >
+            {avaibleAudioDevices.map((device) => (
+              <option key={device.id} value={`${device.name}`}>{device.name}</option>
+            ))}
+          </select>
+        </label>
       )}
-
       {permissionsMicrophone === 'denied' && <p>No tiene permiso de usar el microfono</p>}
       {permissionsMicrophone === 'granted' && <p>Uso de microfono permitido</p>}
       {permissionsMicrophone === 'prompt' && <p>Permiso sin asignar</p>}
-
 
       {permissionsMicrophone === 'granted' && !isRecording && (
         <button
           onClick={handleClickStartRecord}
         >
-          Record
+          <img src='microStartRecord.svg' alt="Stop icon" />
         </button>
       )}
 
@@ -156,24 +157,10 @@ export const App = () => {
         <button
           onClick={handleClickStopRecord}
         >
-          Stop
+          <img src='microStopRecord.svg' alt="Stop icon" />
         </button>
       )}
-      {savedAudios.length > 0 && (
-        <div>
-          <h3>Audios</h3>
-          <ul>
-            {savedAudios.map((data, index) => (
-              <li key={index}>
-                <div>
-                  {console.log(`Data: ${data}`)}
-                  <p>{`Audio: ${index + 1}`}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+
     </div>
 
   )

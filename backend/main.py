@@ -2,7 +2,6 @@ import io
 import os
 import openai
 import whisper
-from openai import OpenAI
 from flask import Flask, redirect, request
 from flask_cors import CORS
 
@@ -41,39 +40,21 @@ def getAudioTask():
             # Obtener el archivo enviado
             audio_file = request.files['file']
 
-            #print('\nrequest.files: ', request.files)
-            #print('\naudio_file: ', audio_file)
-
             audio_file.save(f'audios/{audio_file.filename}.mp3')
 
             # Devolver una respuesta exitosa si es necesario
             path = "E:/Proyectos/ProyectoIA/backend/audios/blob.mp3"
             print('path: ', path)
-            transcribe_audio(path)
+            text = transcribe_audio(path)
 
-            return 'Archivo de audio recibido correctamente', 200
+            return {'message': 'Archivo de audio recibido correctamente', 'transcription': text}, 200
         except Exception as e:
             # Manejar cualquier error que pueda ocurrir durante el procesamiento del archivo
             return f'Error al procesar el archivo: {str(e)}', 500
 
 
-def enruter(task):
-    if task.find('pokemon'):
-        print('frontend pokemon')
-    print(task)
-
-
 def transcribe_audio(audio_file_path):
-    """
-            with open(audio_file_path, 'rb') as audio:
-            transcript = openai.audio.transcriptions.create(
-                model='whisper-1',
-                file=audio,
-                response_format='text',
-                language='es-ES'
-            )
-            print(transcript)
-            """
+
     try:
 
         model = whisper.load_model("base")
@@ -84,16 +65,24 @@ def transcribe_audio(audio_file_path):
 
         # Print transcription for debugging
         print(transcription)
+
         if os.path.exists(audio_file_path):
             # Eliminar el archivo
             os.remove(audio_file_path)
             print(f"El archivo {audio_file_path} ha sido eliminado correctamente.")
         else:
             print(f"El archivo {audio_file_path} no existe.")
+        return transcription
     except Exception as e:
         # Manejar excepciones e imprimir el mensaje de error
         print(f"Error processing transcription: {e}")
         return None
+
+
+def enruter(task):
+    if task.find('pokemon'):
+        print('frontend pokemon')
+    print(task)
 
 
 if __name__ == "__main__":

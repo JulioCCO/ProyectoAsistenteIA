@@ -96,7 +96,6 @@ def getAudioTask():
 def transcribe_audio(audio_file_path):
 
     try:
-
         model = whisper.load_model("base")
         result = model.transcribe(audio_file_path)
 
@@ -117,7 +116,6 @@ def transcribe_audio(audio_file_path):
         # Manejar excepciones e imprimir el mensaje de error
         print(f"Error processing transcription: {e}")
         return None
-
 
 def enruter(task):
     if task.find('pokemon'):

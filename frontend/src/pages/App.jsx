@@ -11,7 +11,7 @@ export const App = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [savedAudios, setSavedAudios] = useState([]);
   const [mediaRecorder, setMediaRecorder] = useState(undefined);
-  const [taskTranscription, setTaskTranscription] = useState(undefined); 
+  const [taskTranscription, setTaskTranscription] = useState(undefined);
 
   let globalMediaRecorder = undefined;
 
@@ -85,6 +85,34 @@ export const App = () => {
     mediaRecorder.stop();
   }
 
+  const handleTypeOfModel = () => {
+    console.log('handleTypeOfModel', taskTranscription);
+    /*
+    1-  Predice la posiblidad de que una persona sobreviva al accidente del Titanic
+    2-  Prediccion del salario de un empleado
+    3-  Predice si un estudiante llega a ser contratado por una empresa
+    4-  Predice el costo de un tiquete de un avion 
+    5-  Predice el estado emocional de una persona
+    6-  Predice si una persona es propensa a recibir ataque cardiacos
+    7-  Predice si una persona es propensa a recibir ataque cerebrovasculares
+    8-  Predice si una persona va dejar su banco
+    9-  Predice el precio del Aguacate
+    10- Predice la calidad del vino
+    */
+  }
+
+  useEffect(() => {
+    if (taskTranscription !== undefined) {
+      console.log('useEffect: taskTranscription', taskTranscription);
+      handleTypeOfModel()
+    }
+  }, [taskTranscription]);
+
+
+  useEffect(() => {
+    if (selectedAudioDevice !== undefined) console.log('useEffect: selectedAudioDevice', selectedAudioDevice);
+  }, [selectedAudioDevice]);
+
 
   useEffect(() => {
     if (isRecording === false && savedAudios.length > 0) {
@@ -112,22 +140,16 @@ export const App = () => {
 
   }, [])
 
-  useEffect(() => {
-    if (taskTranscription !== undefined) console.log('useEffect: taskTranscription', taskTranscription);
-  }, [taskTranscription]);
-
-
-  useEffect(() => {
-    if (selectedAudioDevice !== undefined) console.log('useEffect: selectedAudioDevice', selectedAudioDevice);
-  }, [selectedAudioDevice]);
   /*
     useEffect(() => {
       console.log('useEffect: savedAudios', savedAudios);
     }, [savedAudios]);
   */
+
+
   return (
 
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {permissionsMicrophone === 'granted' && (
         <label>
           Seleccione un dispositivo de audio:

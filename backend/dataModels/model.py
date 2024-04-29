@@ -5,8 +5,10 @@
 import os
 import pickle
 import pandas as pd
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
-class dataLoader:
+class DataLoader:
     def __init__(self):
         """
         Initializes the dataLoader class.
@@ -28,7 +30,8 @@ class dataLoader:
         Returns:
         - loaded_models (dict): Dictionary containing loaded machine learning models.
         """
-        directory_path = r"..\dataModels\models"
+        #si va a ejecutar solo model no desde el mal debe cambiar la ruta a ..\dataModels\models
+        directory_path = r"dataModels\models"
         loaded_models = {}
         for filename in os.listdir(directory_path):
             if filename.endswith('.pkl'):
@@ -140,10 +143,77 @@ class dataLoader:
         except Exception as e:
             print(f"Error predicting with model 'stroke': {e}")
             return None
+    def wine_prediction(self, density, alcohol, volatile_acidity, free_sulfur_dioxide):
+        """
+        Makes predictions using the heart model.
+
+        This method makes predictions using the wine model based on the input density, alcohol, volatile_acidity, free_sulfur_dioxide.
+        Parameters:
+        - density (float): Wine density (g/cm³).
+        - alcohol(float): Percentage of alcohol by volume in wine.
+        - volatile_acidity (float): Volatile acidity of wine, the amount of acetic acid in the form of acetic acid (g/dm³)
+        - free_sulfur_dioxide (float): Free sulfur dioxide in wine (mg/dm³).1-289
+
+        Returns:
+        - original_label (str): Predicted label for the wine quality.
+        """
+        try:
+            # Create a DataFrame with the input data
+            input_data = pd.DataFrame({
+                'volatile acidity': [volatile_acidity],
+                'density': [density],
+                'alcohol': [alcohol],
+                'free sulfur dioxide': [free_sulfur_dioxide]
+            })
+
+            # Make predictions using the trained model
+            prediction_encoded = self.models['wine'].predict(input_data)
+
+            # Define mapping dictionary to map encoded values to original labels
+            label_mapping = {0: 'Bad', 1: 'Good', 2: 'Regular'}
+
+            # Get the original label corresponding to the predicted encoded value
+            original_label = label_mapping[prediction_encoded[0]]
+
+            return original_label
+        except Exception as e:
+            print(f"Error predicting with model 'wine': {e}")
+            return None
+
+    def stroke_prediction(self, ever_married, age):
+        """
+        Makes predictions using the stroke model.
+
+        This method makes predictions using the stroke model based on the input age, ever_married
+
+        Parameters:
+        - age (int): Age of the patient.
+        - ever_married (int 1 0):  Has the patient ever been married?
+
+        Returns:
+        - prediction (bool): Predicted likelihood of stroke (True for high, False for low).
+        """
+        try:
+            # Create a DataFrame with the input data
+            input_data = pd.DataFrame({
+                'ever_married': [ever_married],
+                'age': [age]
+            })
+
+            # Make predictions using the trained model
+            prediction = self.models['stroke'].predict(input_data)
+
+            # Return True if prediction is equal to 1, otherwise return False
+            return bool(prediction[0])  # Convert 1 or 0 to True or False
+
+        except Exception as e:
+            print(f"Error predicting with model 'stroke': {e}")
+            return None
+
 
 if __name__ == "__main__":
     # Create an instance of the dataLoader class
-    data_loader = dataLoader()
+    data_loader = DataLoader()
 
     # Avocado
     avocado_prediction = data_loader.process_SARIMAX('avocado', '2016-01-01')
@@ -154,6 +224,12 @@ if __name__ == "__main__":
     # Test the heart_prediction method
     heart_prediction = data_loader.heart_prediction(60, 65, 101, 1, 2.2, 1)
     print("Heart Prediction:", heart_prediction)
+    # Test the wine_prediction method
+    wine_prediction = data_loader.wine_prediction(0.5, 0.99, 12.3,110)
+    print("Wine Prediction:", wine_prediction)
+    # Test the stroke_prediction method
+    stroke_prediction = data_loader.stroke_prediction(1, 50)
+    print("Stroke Prediction:", stroke_prediction)
 
 
 

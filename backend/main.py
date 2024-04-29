@@ -2,9 +2,9 @@ import io
 import os
 import openai
 import whisper
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, jsonify
 from flask_cors import CORS
-
+from dataModels.model import DataLoader
 # Abrir el archivo key.txt en modo lectura
 with open('key.txt', 'r') as f:
     # Leer la primera línea y quitar espacios en blanco adicionales
@@ -18,7 +18,47 @@ openai.api_key = key_value
 app = Flask(__name__)
 CORS(app)
 
-
+data_loader = DataLoader()
+#endpoint avocado
+@app.route('/avocado', methods=['GET'])
+def avocado():
+    input_date = request.args.get('input_date')
+    prediction = data_loader.process_SARIMAX('avocado', input_date)
+    return jsonify(prediction=prediction)
+#endpoint wine
+@app.route('/wine', methods=['GET'])
+def wine():
+    volatile_acidity = float(request.args.get('volatile_acidity'))
+    density = float(request.args.get('density'))
+    alcohol = float(request.args.get('alcohol'))
+    free_sulfur_dioxide = (float(request.args.get('free_sulfur_dioxide')))
+    prediction = data_loader.wine_prediction(density, alcohol, volatile_acidity, free_sulfur_dioxide)
+    return jsonify(prediction=prediction)
+@app.route('/stroke', methods=['GET'])
+def stroke():
+    ever_married = int(request.args.get('ever_married'))
+    age = int(request.args.get('age'))
+    prediction = data_loader.stroke_prediction(ever_married, age)
+    return jsonify(prediction=prediction)
+@app.route('/heart', methods=['GET'])
+def heart():
+    age = int(request.args.get('age'))
+    trtbps = int(request.args.get('trtbps'))
+    thalachh = int(request.args.get('thalachh'))
+    exng = int(request.args.get('exng'))
+    oldpeak = float(request.args.get('oldpeak'))
+    slp = int(request.args.get('slp'))
+    prediction = data_loader.heart_prediction(age, trtbps, thalachh, exng, oldpeak, slp)
+    return jsonify(prediction=prediction)
+@app.route('/recruitment', methods=['GET'])
+def recruitment():
+    ssc_p = float(request.args.get('ssc_p'))
+    hsc_p = float(request.args.get('hsc_p'))
+    degree_p = float(request.args.get('degree_p'))
+    ssc_b_cat = int(request.args.get('ssc_b_cat'))
+    hsc_b_cat = int(request.args.get('hsc_b_cat'))
+    prediction = data_loader.recruitment_prediction(ssc_p, hsc_p, degree_p, ssc_b_cat, hsc_b_cat)
+    return jsonify(prediction=prediction)
 @app.route('/favicon.ico')
 def favicon():
     return redirect('/static/favicon.ico')
@@ -43,7 +83,7 @@ def getAudioTask():
             audio_file.save(f'audios/{audio_file.filename}.mp3')
 
             # Devolver una respuesta exitosa si es necesario
-            path = "E:/Proyectos/ProyectoIA/backend/audios/blob.mp3"
+            path = r"audios\blob.mp3"
             print('path: ', path)
             text = transcribe_audio(path)
 

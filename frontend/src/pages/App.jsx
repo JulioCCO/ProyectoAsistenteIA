@@ -17,7 +17,7 @@ export const App = () => {
   const [savedAudios, setSavedAudios] = useState([]);
   const [mediaRecorder, setMediaRecorder] = useState(undefined);
   const [taskTranscription, setTaskTranscription] = useState(undefined);
-  const [model, setModel] = useState("avocado");
+  const [model, setModel] = useState("corazon");
   const [formData, setFormData] = useState({});
 
   let globalMediaRecorder = undefined;
@@ -29,28 +29,28 @@ export const App = () => {
     });
   };
   const onSubmit = async() => {
-    if (model === "heart") {
+    if (model === "corazon") {
       let data = await heartPredict(formData);
       console.log("data", data);
-      setModel("heart");
-    }else if (model === "stroke") {
+      setModel("corazon");
+    }else if (model === "cerebro") {
       let data = await strokePredict(formData);
       console.log("data", data);
-      setModel("stroke");
-    }else if (model === "wine") {
+      setModel("cerebro");
+    }else if (model === "vino") {
       let data = await winePredict(formData);
       console.log("data", data);
-      setModel("wine");
+      setModel("vino");
     }
-    else if (model === "recruitment") {
+    else if (model === "reclutamiento") {
       let data = await recruitmentPredict(formData);
       console.log("data", data);
-      setModel("recruitment");
+      setModel("reclutamiento");
     }
-    else if (model === "avocado") {
+    else if (model === "aguacate") {
       let data = await avocadoPredict(formData);
       console.log("data", data);
-      setModel("avocado");
+      setModel("aguacate");
     }
     setFormData({});
   };

@@ -11,23 +11,23 @@ const Form = ({ model, onSubmit, handleInputChange }) => {
     onSubmit();
     setIsOpen(false);
   };
-  if (model == "avocado") {
+  if (model == "aguacate") {
     return (
       <AvocadoForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
     );
-  } else if (model == "wine") {
+  } else if (model == "vino") {
     return (
       <WineForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange}/>
     );
-  } else if (model == "stroke") {
+  } else if (model == "cerebro") {
     return (
       <StrokeForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
     );
-  }else if (model == "heart") {
+  }else if (model == "corazon") {
     return (
       <HeartForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange}/>
     );
-  } else if (model == "recruitment") {
+  } else if (model == "reclutamiento") {
     return (
       <RecruitmentForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange}/>
     );

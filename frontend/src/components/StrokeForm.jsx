@@ -66,14 +66,14 @@ const StrokeForm = ({ isOpen, onClose,handleInputChange }) => {
                 as="h3"
                 className="text-lg leading-6 font-medium text-gray-900"
               >
-                {"Stroke Model "}
+                {"Predicción de un posible derrame cerebral"}
               </Dialog.Title>
               {/* Elemento input para la fecha de inicio */}
               <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="estado"
               >
-                Ever Married
+                Alguna vez ha estado casad@?
               </label>
               <select
                 id="estado" // Identificador del elemento
@@ -85,17 +85,17 @@ const StrokeForm = ({ isOpen, onClose,handleInputChange }) => {
               >
                 {/* opción por defecto del select */}
                 <option value="" >
-                  ever married
+                  alguna vez casad@
                 </option>
                 {/* Opciones del select */}
-                <option value="1">Yes</option>
+                <option value="1">Sí</option>
                 <option value="0">No</option>
               </select>
               <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="age"
               >
-                age
+                edad
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

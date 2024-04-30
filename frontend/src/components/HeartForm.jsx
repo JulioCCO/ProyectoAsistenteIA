@@ -66,13 +66,13 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
                 as="h3"
                 className="text-lg leading-6 font-medium text-gray-900"
               >
-                {"Heart Model "}
+                {"predicción ataques cardíacos "}
               </Dialog.Title>
               <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="age"
               >
-                age
+                edad
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -85,7 +85,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="trtbps"
               >
-                trtbps: resting blood pressure (in mm Hg) 
+                trtbps: presión arterial en reposo (in mm Hg) 
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -100,7 +100,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="thalachh"
               >
-                thalachh: maximum heart rate reached
+                thalachh: frecuencia cardíaca máxima alcanzada
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -115,7 +115,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="exng"
               >
-                exercise-induced angina
+                angina inducida por el ejercicio
               </label>
               <select
                 id="exng" // Identificador del elemento
@@ -127,17 +127,17 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
               >
                 {/* opción por defecto del select */}
                 <option value="">
-                    exng
+                    seleccione una opción
                 </option>
                 {/* Opciones del select */}
-                <option value="1">Yes</option>
+                <option value="1">Sí</option>
                 <option value="0">No</option>
               </select>
               <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="oldpeak"
               >
-                oldpeak exercise-induced ST segment depression on electrocardiogram (ECG)
+                oldpeak: Depresión del segmento ST inducida por el ejercicio en el electrocardiograma. (ECG)
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -152,7 +152,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="slp"
               >
-                slp: type of ST segment slope during exercise
+                slp: tipo de pendiente del segmento ST durante el ejercicio
               </label>
               <select
                 id="slp" // Identificador del elemento

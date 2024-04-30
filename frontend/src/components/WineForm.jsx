@@ -66,14 +66,14 @@ const WineForm = ({ isOpen, onClose, handleInputChange}) => {
                 as="h3"
                 className="text-lg leading-6 font-medium text-gray-900"
               >
-                {"Wine Model "}
+                {"predicción de calidad del vino"}
               </Dialog.Title>
               {/* Elemento input para la fecha de inicio */}
               <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="density"
               >
-                Wine density (g/cm³).
+                Densidad del vino (g/cm³).
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -88,7 +88,7 @@ const WineForm = ({ isOpen, onClose, handleInputChange}) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="alcohol"
               >
-                alcohol (Percentage of alcohol by volume in wine)
+                alcohol (porcentaje de alcohol por volumen en el vino)
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -103,7 +103,7 @@ const WineForm = ({ isOpen, onClose, handleInputChange}) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="volatile_acidity"
               >
-                Volatile acidity of wine, the amount of acetic acid in the form of acetic acid (g/dm³)
+                Acidez volátil del vino, cantidad de ácido acético en forma de ácido acético (g/dm³)
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -118,7 +118,7 @@ const WineForm = ({ isOpen, onClose, handleInputChange}) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="free_sulfur_dioxide"
               >
-                Free sulfur dioxide in wine (mg/dm³).
+                Dióxido de azufre libre en vino (mg/dm³).
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

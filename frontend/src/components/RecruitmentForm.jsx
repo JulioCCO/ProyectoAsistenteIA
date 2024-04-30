@@ -66,13 +66,13 @@ const RecruitmentForm = ({ isOpen, onClose, handleInputChange }) => {
                 as="h3"
                 className="text-lg leading-6 font-medium text-gray-900"
               >
-                {"Recruitment Model "}
+                {"predicción sobre reclutamiento"}
               </Dialog.Title>
               <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="ssc_p"
               >
-                Percentage of Secondary Education -10th Grade.
+                Porcentaje de Educación Secundaria -10° Grado.
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -87,7 +87,7 @@ const RecruitmentForm = ({ isOpen, onClose, handleInputChange }) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="hsc_p"
               >
-                Percentage of Higher Secondary Education - Grade 12.
+                Porcentaje de Educación Secundaria Superior - Grado 12.
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -102,7 +102,7 @@ const RecruitmentForm = ({ isOpen, onClose, handleInputChange }) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="degree_p"
               >
-                Grade Percentage
+                Porcentaje de Calificación en la Universidad.
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -117,7 +117,7 @@ const RecruitmentForm = ({ isOpen, onClose, handleInputChange }) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="ssc_b_cat"
               >
-                Board of education - Secondary Education
+                Junta de Educación - Educación Secundaria
               </label>
               <select
                 id="ssc_b_cat" // Identificador del elemento
@@ -129,17 +129,17 @@ const RecruitmentForm = ({ isOpen, onClose, handleInputChange }) => {
               >
                 {/* opción por defecto del select */}
                 <option value="">
-                Board of education
+                Junta de Educación
                 </option>
                 {/* Opciones del select */}
                 <option value="0">central</option>
-                <option value="1">others</option>
+                <option value="1">otros</option>
               </select>
               <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="hsc_b_cat"
               >
-                Board of education - Higher Secondary Education
+                Junta de Educación - Educación Secundaria Superior
               </label>
               <select
                 id="hsc_b_cat" // Identificador del elemento
@@ -151,11 +151,11 @@ const RecruitmentForm = ({ isOpen, onClose, handleInputChange }) => {
               >
                 {/* opción por defecto del select */}
                 <option value="" >
-                Board of education
+                Junta de Educación
                 </option>
                 {/* Opciones del select */}
                 <option value="0">central</option>
-                <option value="1">others</option>
+                <option value="1">otros</option>
               </select>
               <div className="mt-5 sm:mt-6">
                 {/* Botón para guardar la tarea */}

@@ -8,6 +8,7 @@ import pandas as pd
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
+
 class DataLoader:
     def __init__(self):
         """
@@ -31,7 +32,7 @@ class DataLoader:
         - loaded_models (dict): Dictionary containing loaded machine learning models.
         """
         #si va a ejecutar solo model no desde el mal debe cambiar la ruta a ..\dataModels\models
-        directory_path = r"dataModels\models"
+        directory_path = r"dataModels/models"
         loaded_models = {}
         for filename in os.listdir(directory_path):
             if filename.endswith('.pkl'):

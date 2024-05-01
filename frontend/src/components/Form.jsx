@@ -23,7 +23,7 @@ const Form = ({ model, onSubmit, handleInputChange }) => {
     return (
       <StrokeForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
     );
-  }else if (model == "corazon") {
+  }else if (model == "corazón") {
     return (
       <HeartForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange}/>
     );

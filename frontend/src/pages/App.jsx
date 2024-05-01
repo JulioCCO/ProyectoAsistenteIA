@@ -1,14 +1,15 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { sendBlob } from "../../client/api";
+import { AnimatedGif } from "../components/AnimatedGif";
 import { avocadoPredict } from "../../client/api";
 import { heartPredict } from "../../client/api";
 import { strokePredict } from "../../client/api";
 import { winePredict } from "../../client/api";
 import { recruitmentPredict } from "../../client/api";
 
-
 import Form from "../components/Form";
+
 export const App = () => {
   const [permissionsMicrophone, setPermissionsMicrophone] = useState("denied");
   const [avaibleAudioDevices, setAvaibleAudioDevices] = useState([]);
@@ -17,10 +18,14 @@ export const App = () => {
   const [savedAudios, setSavedAudios] = useState([]);
   const [mediaRecorder, setMediaRecorder] = useState(undefined);
   const [taskTranscription, setTaskTranscription] = useState(undefined);
-  const [model, setModel] = useState("corazon");
+
+  const [model, setModel] = useState(undefined);
   const [formData, setFormData] = useState({});
 
+  const [showForm, setShowForm] = useState(false);
+
   let globalMediaRecorder = undefined;
+
   const handleInputChange = (id, value) => {
     //Actualizar el estado formData con los datos ingresados en el formulario
     setFormData({
@@ -28,32 +33,33 @@ export const App = () => {
       [id]: value,
     });
   };
-  const onSubmit = async() => {
-    if (model === "corazon") {
-      let data = await heartPredict(formData);
-      console.log("data", data);
-      setModel("corazon");
-    }else if (model === "cerebro") {
-      let data = await strokePredict(formData);
-      console.log("data", data);
-      setModel("cerebro");
-    }else if (model === "vino") {
-      let data = await winePredict(formData);
-      console.log("data", data);
-      setModel("vino");
+
+  const onSubmit = async () => {
+    let data = null;
+    switch (model) {
+      case "corazón":
+        data = await heartPredict(formData);
+        break;
+      case "cerebro":
+        data = await strokePredict(formData);
+        break;
+      case "vino":
+        data = await winePredict(formData);
+        break;
+      case "reclutamiento":
+        data = await recruitmentPredict(formData);
+        break;
+      case "aguacate":
+        data = await avocadoPredict(formData);
+        break;
     }
-    else if (model === "reclutamiento") {
-      let data = await recruitmentPredict(formData);
-      console.log("data", data);
-      setModel("reclutamiento");
-    }
-    else if (model === "aguacate") {
-      let data = await avocadoPredict(formData);
-      console.log("data", data);
-      setModel("aguacate");
-    }
+    console.log('data de la respuesta del modelo', data);
+    setModel(undefined)
+    setShowForm(false);
     setFormData({});
+
   };
+
   const sendBlobToBackend = async (blob) => {
     try {
       let data = await sendBlob(blob);
@@ -126,18 +132,35 @@ export const App = () => {
   }
 
   const handleTypeOfModel = () => {
-    console.log("handleTypeOfModel", taskTranscription);
+
+    if (taskTranscription.toLowerCase().includes('corazón')) {
+      setModel('corazón');
+    }
+    else if (taskTranscription.toLowerCase().includes('cerebro')) {
+      setModel('cerebro');
+    }
+    else if (taskTranscription.toLowerCase().includes('vino')) {
+      setModel('vino');
+    }
+    else if (taskTranscription.toLowerCase().includes('reclutamiento')) {
+      setModel('reclutamiento');
+    }
+    else if (taskTranscription.toLowerCase().includes('aguacate')) {
+      setModel('aguacate');
+    }
+    setShowForm(true);
+    setTaskTranscription(undefined);
     /*
-    1-  Predice la posiblidad de que una persona sobreviva al accidente del Titanic
-    2-  Prediccion del salario de un empleado
-    3-  Predice si un estudiante llega a ser contratado por una empresa
-    4-  Predice el costo de un tiquete de un avion 
-    5-  Predice el estado emocional de una persona
-    6-  Predice si una persona es propensa a recibir ataque cardiacos
-    7-  Predice si una persona es propensa a recibir ataque cerebrovasculares
-    8-  Predice si una persona va dejar su banco
-    9-  Predice el precio del Aguacate
-    10- Predice la calidad del vino
+    1-  Predice la posiblidad de que una persona sobreviva al accidente del Titanic: true o false
+    2-  Prediccion del salario de un empleado: float
+    3-  Predice si un estudiante llega a ser contratado por una empresa: true o false
+    4-  Predice el costo de un tiquete de un avion: float
+    5-  Predice el estado emocional de una persona: low, medium, high
+    6-  Predice si una persona es propensa a recibir ataque cardiacos: true o false
+    7-  Predice si una persona es propensa a recibir ataque cerebrovasculares: true o false
+    8-  Predice si una persona va dejar su banco: true o false
+    9-  Predice el precio del Aguacate: float
+    10- Predice la calidad del vino: bad, regular, good
     */
   };
 
@@ -189,7 +212,7 @@ export const App = () => {
     >
       {permissionsMicrophone === "granted" && (
         <label>
-          Seleccione un dispositivo de audio:
+          Dispositivos de audio:
           <select
             name="selectedDevice"
             value={selectedAudioDevice}
@@ -203,28 +226,33 @@ export const App = () => {
           </select>
         </label>
       )}
-      {permissionsMicrophone === "denied" && (
-        <p>No tiene permiso de usar el microfono</p>
-      )}
-      {permissionsMicrophone === "granted" && <p>Uso de microfono permitido</p>}
-      {permissionsMicrophone === "prompt" && <p>Permiso sin asignar</p>}
 
       {permissionsMicrophone === "granted" && !isRecording && (
         <button onClick={handleClickStartRecord}>
-          <img src="microStartRecord.svg" alt="Stop icon" />
+          <AnimatedGif src="https://media.tenor.com/CigpzapemsoAAAAi/hi-robot.gif" alt="Animated GIF" />
+
         </button>
       )}
 
       {permissionsMicrophone === "granted" && isRecording && (
         <button onClick={handleClickStopRecord}>
-          <img src="microStopRecord.svg" alt="Stop icon" />
+          <AnimatedGif src="https://media.tenor.com/CigpzapemsoAAAAi/hi-robot.gif" alt="Animated GIF" />
+          Recording...
         </button>
       )}
-      <Form
-        model={model}
-        onSubmit={onSubmit}
-        handleInputChange={handleInputChange}
-      />
+
+      {permissionsMicrophone === 'denied' && <p>No tiene permiso de usar el microfono</p>}
+      {permissionsMicrophone === 'granted' && <p>Uso de microfono permitido</p>}
+      {permissionsMicrophone === 'prompt' && <p>Permiso sin asignar</p>}
+
+      {showForm &&
+        (<Form
+          model={model}
+          onSubmit={onSubmit}
+          handleInputChange={handleInputChange}
+        />)}
+
     </div>
+
   );
 };

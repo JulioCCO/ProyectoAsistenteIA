@@ -11,18 +11,22 @@ import { recruitmentPredict } from "../../client/api";
 import Form from "../components/Form";
 
 export const App = () => {
+
+  /*Audio*/
   const [permissionsMicrophone, setPermissionsMicrophone] = useState("denied");
   const [avaibleAudioDevices, setAvaibleAudioDevices] = useState([]);
   const [selectedAudioDevice, setSelectedAudioDevice] = useState(undefined);
   const [isRecording, setIsRecording] = useState(false);
   const [savedAudios, setSavedAudios] = useState([]);
+
+  /*general*/
   const [mediaRecorder, setMediaRecorder] = useState(undefined);
   const [taskTranscription, setTaskTranscription] = useState(undefined);
 
   const [model, setModel] = useState(undefined);
   const [formData, setFormData] = useState({});
-
   const [showForm, setShowForm] = useState(false);
+
 
   let globalMediaRecorder = undefined;
 
@@ -52,6 +56,10 @@ export const App = () => {
       case "aguacate":
         data = await avocadoPredict(formData);
         break;
+      case "emociones":
+        console.log('emociones');
+        //data = await avocadoPredict(formData);
+        break;
     }
     console.log('data de la respuesta del modelo', data);
     setModel(undefined)
@@ -70,6 +78,18 @@ export const App = () => {
     }
   };
 
+  async function handlePermissionState(state) {
+    setPermissionsMicrophone(state);
+    if (state === "granted") {
+      await getAvailableAudioDevices().then((devices) => {
+        setAvaibleAudioDevices(devices);
+        setSelectedAudioDevice(
+          devices.find((device) => device.id === "default")?.id
+        );
+      });
+    }
+  }
+
   async function getAvailableAudioDevices() {
     return await new Promise((resolve) => {
       navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -81,18 +101,6 @@ export const App = () => {
         resolve(avaibleDevices);
       });
     });
-  }
-
-  async function handlePermissionState(state) {
-    setPermissionsMicrophone(state);
-    if (state === "granted") {
-      await getAvailableAudioDevices().then((devices) => {
-        setAvaibleAudioDevices(devices);
-        setSelectedAudioDevice(
-          devices.find((device) => device.id === "default")?.id
-        );
-      });
-    }
   }
 
   function handleClickStartRecord() {
@@ -132,8 +140,10 @@ export const App = () => {
   }
 
   const handleTypeOfModel = () => {
-
-    if (taskTranscription.toLowerCase().includes('corazón')) {
+    if (taskTranscription.toLowerCase().includes('emociones')) {
+      setModel('emociones')
+    }
+    else if (taskTranscription.toLowerCase().includes('corazón')) {
       setModel('corazón');
     }
     else if (taskTranscription.toLowerCase().includes('cerebro')) {
@@ -163,6 +173,7 @@ export const App = () => {
     10- Predice la calidad del vino: bad, regular, good
     */
   };
+
 
   useEffect(() => {
     if (taskTranscription !== undefined) {
@@ -198,13 +209,8 @@ export const App = () => {
           await handlePermissionState(onChangeResult.target.state);
         };
       });
-  }, []);
 
-  /*
-    useEffect(() => {
-      console.log('useEffect: savedAudios', savedAudios);
-    }, [savedAudios]);
-  */
+  }, []);
 
   return (
     <div

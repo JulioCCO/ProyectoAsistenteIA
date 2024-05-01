@@ -79,13 +79,13 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
                 id="age"
                 type="text"
                 placeholder="age"
-                onChange={(e) => {handleInputChange("age", e.target.value)}} // Función que se ejecuta cuando se cambia el valor del input
+                onChange={(e) => { handleInputChange("age", e.target.value) }} // Función que se ejecuta cuando se cambia el valor del input
               />
-               <label
+              <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="trtbps"
               >
-                trtbps: presión arterial en reposo (in mm Hg) 
+                trtbps: presión arterial en reposo (in mm Hg)
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -96,7 +96,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
                   handleInputChange("trtbps", e.target.value)
                 }} // Función que se ejecuta cuando se cambia el valor del input
               />
-               <label
+              <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="thalachh"
               >
@@ -111,7 +111,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
                   handleInputChange("thalachh", e.target.value)
                 }} // Función que se ejecuta cuando se cambia el valor del input
               />
-               <label
+              <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="exng"
               >
@@ -127,7 +127,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
               >
                 {/* opción por defecto del select */}
                 <option value="">
-                    seleccione una opción
+                  seleccione una opción
                 </option>
                 {/* Opciones del select */}
                 <option value="1">Sí</option>
@@ -148,7 +148,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
                   handleInputChange("oldpeak", e.target.value)
                 }} // Función que se ejecuta cuando se cambia el valor del input
               />
-                 <label
+              <label
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="slp"
               >
@@ -164,7 +164,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
               >
                 {/* opción por defecto del select */}
                 <option value="">
-                    slp
+                  slp
                 </option>
                 {/* Opciones del select */}
                 <option value="0">0</option>

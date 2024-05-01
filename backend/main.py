@@ -1,4 +1,3 @@
-import io
 import os
 import openai
 import whisper
@@ -6,6 +5,9 @@ from flask import Flask, redirect, request, jsonify
 from flask_cors import CORS
 from dataModels.model import DataLoader
 # Abrir el archivo key.txt en modo lectura
+
+from fer import FER
+import matplotlib.pyplot as plt
 
 with open('key.txt', 'r') as f:
     # Leer la primera línea y quitar espacios en blanco adicionales
@@ -147,6 +149,31 @@ def getAudioTask():
             return f'Error al procesar el archivo: {str(e)}', 500
 
 
+@app.route("/uploadImage", methods=['POST'])
+def upload_image():
+    if request.method == 'POST':
+        try:
+            # Verificar si se envió un archivo
+            if 'image' not in request.files:
+                return 'No se envió ninguna imagen', 400
+
+            # Obtener el archivo de imagen enviado
+            image_file = request.files['image']
+
+            # Guardar la imagen en el servidor
+            image_file.save(f'images/{image_file.filename}')
+
+            # Devolver una respuesta exitosa si es necesario
+            path = f'images/{image_file.filename}'
+            print('path: ', path)
+            # Aquí deberías realizar cualquier procesamiento adicional que necesites con la imagen, como análisis, procesamiento de datos, etc.
+            # Por ejemplo, podrías llamar a una función para procesar la imagen y devolver el resultado.
+
+            return {'message': 'Imagen recibida correctamente', 'image_path': path}, 200
+        except Exception as e:
+            # Manejar cualquier error que pueda ocurrir durante el procesamiento de la imagen
+            return f'Error al procesar la imagen: {str(e)}', 500
+
 def transcribe_audio(audio_file_path):
 
     try:
@@ -171,10 +198,25 @@ def transcribe_audio(audio_file_path):
         print(f"Error processing transcription: {e}")
         return None
 
-def enruter(task):
-    if task.find('pokemon'):
-        print('frontend pokemon')
-    print(task)
+def processEmotion(ruta):
+    try:
+        test_image_one = plt.imread(ruta)
+        emo_detector = FER(mtcnn=True)
+        # Capture all the emotions on the image
+        captured_emotions = emo_detector.detect_emotions(test_image_one)
+        # Print all captured emotions with the image
+        print(captured_emotions[0]['emotions'])
+        plt.imshow(test_image_one)
+
+        # Use the top Emotion() function to call for the dominant emotion in the image
+        dominant_emotion, emotion_score = emo_detector.top_emotion(test_image_one)
+        print(dominant_emotion, emotion_score)
+        return emotion_score
+
+    except Exception as e:
+        # Manejar excepciones e imprimir el mensaje de error
+        print(f"Error al calcular emociones: {e}")
+        return None
 
 
 if __name__ == "__main__":

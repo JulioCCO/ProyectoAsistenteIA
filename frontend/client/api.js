@@ -5,6 +5,7 @@ import config from '../config.js';
 
 const { apiUrl } = config;
 
+
 export const sendBlob = async (file) => {
     try {
         const formData = new FormData();
@@ -12,7 +13,7 @@ export const sendBlob = async (file) => {
 
         const response = await axios.post(`${apiUrl}/audioTask`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data' // Establece el tipo de contenido como formulario multipart
+                'Content-Type': 'multipart/form-data'
             }
         });
         return response.data.transcription
@@ -21,6 +22,25 @@ export const sendBlob = async (file) => {
         throw new Error(`Error al enviar el archivo al backend: ${error.message}`);
     }
 }
+
+export const sendImage = async (imageFile) => {
+    try {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+
+        const response = await axios.post(`${apiUrl}/uploadImage`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        console.log(response)
+        return response;
+    } catch (error) {
+        console.error('Error al enviar la imagen al backend:', error);
+        throw new Error(`Error al enviar la imagen al backend: ${error.message}`);
+    }
+}
+
 export const avocadoPredict = async (formData) => {
     try {
 

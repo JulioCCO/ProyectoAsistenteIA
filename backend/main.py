@@ -107,7 +107,7 @@ def salary():
 def titanic():
     pclass = int(request.form.get('pclass'))
     sex = int(request.form.get('sex'))
-    age = int(request.form.get('age '))
+    age = int(request.form.get('age'))
     sibsp = int(request.form.get('sibsp'))
     parch = int(request.form.get('parch'))
     fare = float(request.form.get('fare'))

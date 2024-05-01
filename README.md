@@ -19,14 +19,6 @@ choco instsall ffmpeg
 ```
 pip install -U openai-whisper
 ```
-* `FER` using:
-```
-pip install FER
-```
-* `Tensorflow` using:
-```
-pip install tensorflow
-```
 
 ### Backend dependencies
 
@@ -38,4 +30,6 @@ $> pip install flask
 $> pip install statsmodels
 $> pip install scikit-learn==1.2.2
 $> pip install pandas
+$> pip install FER
+$> pip install tensorflow
 ``` 

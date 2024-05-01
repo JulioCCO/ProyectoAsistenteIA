@@ -5,6 +5,11 @@ import HeartForm from "./HeartForm";
 import RecruitmentForm from "./RecruitmentForm";
 import { useState } from "react";
 import { EmotionForm } from "./EmotionForm";
+import BankForm from "./BankForm";
+import FlightForm from "./FlightForm";
+import MoodForm from "./MoodForm";
+import SalaryForm from "./SalaryForm";
+import TitanicForm from "./TitanicForm";
 // eslint-disable-next-line react/prop-types
 const Form = ({ model, onSubmit, handleInputChange }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -31,6 +36,26 @@ const Form = ({ model, onSubmit, handleInputChange }) => {
   } else if (model == "reclutamiento") {
     return (
       <RecruitmentForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
+    );
+  } else if (model == "banco") {
+    return (
+      <BankForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
+    );
+  } else if (model == "vuelo") {
+    return (
+      <FlightForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
+    );
+  } else if (model == "humor") {
+    return (
+      <MoodForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
+    );
+  } else if (model == "salario") {
+    return (
+      <SalaryForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
+    );
+  } else if (model == "titanic") {
+    return (
+      <TitanicForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
     );
   } else if (model == 'emociones') {
     return (

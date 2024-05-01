@@ -7,6 +7,11 @@ import { heartPredict } from "../../client/api";
 import { strokePredict } from "../../client/api";
 import { winePredict } from "../../client/api";
 import { recruitmentPredict } from "../../client/api";
+import { bankPredict } from "../../client/api";
+import { titanicPredict } from "../../client/api";
+import { salaryPredict } from "../../client/api";
+import { moodPredict } from "../../client/api";
+import { flightPredict } from "../../client/api";
 
 import Form from "../components/Form";
 
@@ -41,6 +46,21 @@ export const App = () => {
   const onSubmit = async () => {
     let data = null;
     switch (model) {
+      case "vuelo":
+        data = await flightPredict(formData);
+        break;
+      case "banco":
+        data = await bankPredict(formData);
+        break;
+      case "humor":
+        data = await moodPredict(formData);
+        break;
+      case "salario":
+        data = await salaryPredict(formData);
+        break;
+      case "titanic":
+        data = await titanicPredict(formData);
+        break;
       case "corazón":
         data = await heartPredict(formData);
         break;
@@ -157,6 +177,21 @@ export const App = () => {
     }
     else if (taskTranscription.toLowerCase().includes('aguacate')) {
       setModel('aguacate');
+    }
+    else if (taskTranscription.toLowerCase().includes('banco')) {
+      setModel('banco');
+    }
+    else if (taskTranscription.toLowerCase().includes('salario')) {
+      setModel('salario');
+    }
+    else if (taskTranscription.toLowerCase().includes('humor')) {
+      setModel('humor');
+    }
+    else if (taskTranscription.toLowerCase().includes('titanic')) {
+      setModel('titanic');
+    }
+    else if (taskTranscription.toLowerCase().includes('vuelo')) {
+      setModel('vuelo');
     }
     setShowForm(true);
     setTaskTranscription(undefined);

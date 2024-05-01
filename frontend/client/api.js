@@ -122,3 +122,93 @@ export const recruitmentPredict = async (formData) => {
     }
 }
 
+export const bankPredict = async (formData) => {
+    try {
+
+        console.log('formData', formData);
+        const response = await axios.post(`${apiUrl}/bank`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // Establece el tipo de contenido como formulario multipart
+            }
+        });
+        return response.data.prediction
+
+    } catch (error) {
+        console.error('Error al enviar el archivo al backend:', error);
+        throw new Error(`Error al enviar el archivo al backend: ${error.message}`);
+    }
+
+}
+
+export const flightPredict = async (formData) => {
+    try {
+
+        console.log('formData', formData);
+        const response = await axios.post(`${apiUrl}/flight`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // Establece el tipo de contenido como formulario multipart
+            }
+        });
+        return response.data.prediction
+
+    } catch (error) {
+        console.error('Error al enviar el archivo al backend:', error);
+        throw new Error(`Error al enviar el archivo al backend: ${error.message}`);
+    }
+
+}
+
+export const moodPredict = async (formData) => {
+    try {
+
+        console.log('formData', formData);
+        const response = await axios.post(`${apiUrl}/mood`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // Establece el tipo de contenido como formulario multipart
+            }
+        });
+        return response.data.prediction
+
+    } catch (error) {
+        console.error('Error al enviar el archivo al backend:', error);
+        throw new Error(`Error al enviar el archivo al backend: ${error.message}`);
+    }
+
+}
+
+export const salaryPredict = async (formData) => {
+    try {
+
+        console.log('formData', formData);
+        const response = await axios.post(`${apiUrl}/salary`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // Establece el tipo de contenido como formulario multipart
+            }
+        });
+        return response.data.prediction
+
+    } catch (error) {
+        console.error('Error al enviar el archivo al backend:', error);
+        throw new Error(`Error al enviar el archivo al backend: ${error.message}`);
+    }
+
+}
+
+export const titanicPredict = async (formData) => {
+    try {
+
+        console.log('formData', formData);
+        const response = await axios.post(`${apiUrl}/titanic`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // Establece el tipo de contenido como formulario multipart
+            }
+        });
+        return response.data.prediction
+
+    } catch (error) {
+        console.error('Error al enviar el archivo al backend:', error);
+        throw new Error(`Error al enviar el archivo al backend: ${error.message}`);
+    }
+
+}
+

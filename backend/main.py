@@ -166,10 +166,10 @@ def upload_image():
             # Devolver una respuesta exitosa si es necesario
             path = f'images/{image_file.filename}'
             print('path: ', path)
-            # Aquí deberías realizar cualquier procesamiento adicional que necesites con la imagen, como análisis, procesamiento de datos, etc.
-            # Por ejemplo, podrías llamar a una función para procesar la imagen y devolver el resultado.
 
-            return {'message': 'Imagen recibida correctamente', 'image_path': path}, 200
+            jsonInfo = processEmotion(path)
+            print('text: ', jsonInfo)
+            return {'message': 'Imagen recibida correctamente', 'image_path': jsonInfo}, 200
         except Exception as e:
             # Manejar cualquier error que pueda ocurrir durante el procesamiento de la imagen
             return f'Error al procesar la imagen: {str(e)}', 500
@@ -211,7 +211,7 @@ def processEmotion(ruta):
         # Use the top Emotion() function to call for the dominant emotion in the image
         dominant_emotion, emotion_score = emo_detector.top_emotion(test_image_one)
         print(dominant_emotion, emotion_score)
-        return emotion_score
+        return {'emotions': captured_emotions[0]['emotions'], 'dominant_emotion': dominant_emotion}
 
     except Exception as e:
         # Manejar excepciones e imprimir el mensaje de error

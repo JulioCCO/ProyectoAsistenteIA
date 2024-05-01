@@ -10,6 +10,7 @@ export const EmotionForm = ({ isOpen, onClose, handleInputChange }) => {
     const [permissionsCamera, setPermissionsCamera] = useState("denied");
     const [avaibleVideoDevices, setAvaibleVideoDevices] = useState([]);
     const [selectedVideoDevice, setSelectedVideoDevice] = useState(undefined);
+    const [photoData, setPhotoData] = useState(undefined);
 
     async function handleCameraPermissionState(state) {
         setPermissionsCamera(state);
@@ -39,10 +40,10 @@ export const EmotionForm = ({ isOpen, onClose, handleInputChange }) => {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             console.log("media devices supported..");
             navigator.mediaDevices.getUserMedia({ video: { width: 450, height: 450 } })
-                .then((stream) => {
+                .then(async (stream) => {
                     let video = videoRef.current;
                     video.srcObject = stream;
-                    video.play();
+                    await video.play();
                 })
                 .catch((err) => {
                     console.error(err);
@@ -58,6 +59,40 @@ export const EmotionForm = ({ isOpen, onClose, handleInputChange }) => {
                 };
             });
     }
+
+    const takePhoto = () => {
+        const width = 200;
+        const height = 200;
+
+        let video = videoRef.current;
+        let photo = photoRef.current;
+
+        photo.width = width;
+        photo.height = height;
+
+        let ctx = photo.getContext('2d');
+        ctx.drawImage(video, 0, 0, width, height)
+        // Obtener la imagen como datos URI desde el canvas
+        const imageDataURI = photo.toDataURL('image/jpeg');
+
+        // Convertir la imagen a un Blob
+        const blobData = dataURItoBlob(imageDataURI);
+        console.log('blobData', blobData);
+        setPhotoData(blobData);
+        handleInputChange('photo', blobData);
+    }
+
+    const dataURItoBlob = (dataURI) => {
+        const byteString = atob(dataURI.split(',')[1]);
+        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mimeString });
+    }
+
     useEffect(() => {
         videoSettings()
     }, [])
@@ -131,9 +166,9 @@ export const EmotionForm = ({ isOpen, onClose, handleInputChange }) => {
                             >
                                 {"Deteccion de emociones"}
                             </Dialog.Title>
-                            <div>
+                            <div >
                                 {permissionsCamera === "granted" && (
-                                    <label>
+                                    <label className="text-sm text-center font-medium mb-2 text-secondary">
                                         Dispositivos de video:
                                         <select
                                             name="selectedDevice"
@@ -149,18 +184,32 @@ export const EmotionForm = ({ isOpen, onClose, handleInputChange }) => {
                                     </label>
                                 )}
                                 {/* FALTA MOSTRAR LA CAMARA Y TOMAR FOTO */}
-                                <video ref={videoRef}></video>
+
+                                <video className="mt-2" ref={videoRef} />
+
                                 <button
                                     type="button"
-                                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-secondary hover:bg-teal-300  text-base font-medium text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
-                                    onClick={onClose} // Función que se ejecuta cuando se hace click en el botón
+                                    className="inline-flex mt-2 justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-secondary hover:bg-teal-300  text-base font-medium text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                                    onClick={takePhoto} // Función que se ejecuta cuando se hace click en el botón
                                 >
                                     Tomar foto
                                 </button>
-                                <canvas className="m-2" ref={photoRef}></canvas>
-                                {permissionsCamera === 'denied' && <p>No tiene permiso de usar la camara</p>}
-                                {permissionsCamera === 'granted' && <p>Uso de camara permitido</p>}
-                                {permissionsCamera === 'prompt' && <p>Permiso sin asignar</p>}
+                                <div className="inline-flex mt-2 justify-center w-full">
+                                    <canvas className="mt-2" ref={photoRef} />
+                                </div>
+
+                                <div className="text-sm text-center font-medium mb-2">
+                                    {permissionsCamera === 'denied' && <p>No tiene permiso de usar la camara</p>}
+                                    {permissionsCamera === 'granted' && <p>Uso de camara permitido</p>}
+                                    {permissionsCamera === 'prompt' && <p>Permiso sin asignar</p>}
+                                </div>
+                                <button
+                                    type="button"
+                                    className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-secondary hover:bg-teal-300  text-base font-medium text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                                    onClick={() => onClose()} // Función que se ejecuta cuando se hace click en el botón
+                                >
+                                    Aceptar
+                                </button>
                             </div>
                         </div>
                     </Transition.Child>

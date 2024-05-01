@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useState } from "react";
-import { sendBlob } from "../../client/api";
+import { sendBlob, sendImage } from "../../client/api";
 import { AnimatedGif } from "../components/AnimatedGif";
 import { avocadoPredict } from "../../client/api";
 import { heartPredict } from "../../client/api";
@@ -14,6 +14,7 @@ import { moodPredict } from "../../client/api";
 import { flightPredict } from "../../client/api";
 
 import Form from "../components/Form";
+import { ResponseModal } from "./ResponseModal";
 
 export const App = () => {
 
@@ -32,6 +33,10 @@ export const App = () => {
   const [formData, setFormData] = useState({});
   const [showForm, setShowForm] = useState(false);
 
+  /*result */
+  const [responseResult, setResponseResult] = useState(undefined);
+  const [resultFlag, setResultFlag] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   let globalMediaRecorder = undefined;
 
@@ -78,13 +83,15 @@ export const App = () => {
         break;
       case "emociones":
         console.log('emociones');
-        //data = await avocadoPredict(formData);
+        console.log(formData);
+        data = await sendImage(formData.photo);
         break;
     }
-    console.log('data de la respuesta del modelo', data);
-    setModel(undefined)
     setShowForm(false);
     setFormData({});
+    setResponseResult(data);
+    console.log('data de la respuesta del modelo', data);
+
 
   };
 
@@ -166,7 +173,7 @@ export const App = () => {
     else if (taskTranscription.toLowerCase().includes('corazón')) {
       setModel('corazón');
     }
-    else if (taskTranscription.toLowerCase().includes('cerebro')) {
+    else if (taskTranscription.toLowerCase().includes('cerebro') || taskTranscription.toLowerCase().includes('serebro')) {
       setModel('cerebro');
     }
     else if (taskTranscription.toLowerCase().includes('vino')) {
@@ -187,7 +194,7 @@ export const App = () => {
     else if (taskTranscription.toLowerCase().includes('humor')) {
       setModel('humor');
     }
-    else if (taskTranscription.toLowerCase().includes('titanic')) {
+    else if (taskTranscription.toLowerCase().includes('titanic') || taskTranscription.toLowerCase().includes('titanik')) {
       setModel('titanic');
     }
     else if (taskTranscription.toLowerCase().includes('vuelo')) {
@@ -195,20 +202,22 @@ export const App = () => {
     }
     setShowForm(true);
     setTaskTranscription(undefined);
-    /*
-    1-  Predice la posiblidad de que una persona sobreviva al accidente del Titanic: true o false
-    2-  Prediccion del salario de un empleado: float
-    3-  Predice si un estudiante llega a ser contratado por una empresa: true o false
-    4-  Predice el costo de un tiquete de un avion: float
-    5-  Predice el estado emocional de una persona: low, medium, high
-    6-  Predice si una persona es propensa a recibir ataque cardiacos: true o false
-    7-  Predice si una persona es propensa a recibir ataque cerebrovasculares: true o false
-    8-  Predice si una persona va dejar su banco: true o false
-    9-  Predice el precio del Aguacate: float
-    10- Predice la calidad del vino: bad, regular, good
-    */
+
   };
 
+  const onClose = () => {
+    setResultFlag(false);
+    setModel(undefined);
+    setIsOpen(false);
+    setResponseResult(undefined);
+  };
+
+  useEffect(() => {
+    if (responseResult !== undefined) {
+      setResultFlag(true);
+      setIsOpen(true);
+    }
+  }, [responseResult])
 
   useEffect(() => {
     if (taskTranscription !== undefined) {
@@ -252,7 +261,7 @@ export const App = () => {
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       {permissionsMicrophone === "granted" && (
-        <label>
+        <label className="text-lg text-center font-medium m-2 text-secondary">
           Dispositivos de audio:
           <select
             name="selectedDevice"
@@ -269,22 +278,25 @@ export const App = () => {
       )}
 
       {permissionsMicrophone === "granted" && !isRecording && (
-        <button onClick={handleClickStartRecord}>
+        <button onClick={handleClickStartRecord} >
           <AnimatedGif src="https://media.tenor.com/CigpzapemsoAAAAi/hi-robot.gif" alt="Animated GIF" />
 
         </button>
       )}
 
       {permissionsMicrophone === "granted" && isRecording && (
-        <button onClick={handleClickStopRecord}>
+        <button onClick={handleClickStopRecord} >
           <AnimatedGif src="https://media.tenor.com/CigpzapemsoAAAAi/hi-robot.gif" alt="Animated GIF" />
           Recording...
         </button>
       )}
 
-      {permissionsMicrophone === 'denied' && <p>No tiene permiso de usar el microfono</p>}
-      {permissionsMicrophone === 'granted' && <p>Uso de microfono permitido</p>}
-      {permissionsMicrophone === 'prompt' && <p>Permiso sin asignar</p>}
+      <div className="text-sm text-center font-medium m-2">
+        {permissionsMicrophone === 'denied' && <p>No tiene permiso de usar el microfono</p>}
+        {permissionsMicrophone === 'granted' && <p>Uso de microfono permitido</p>}
+        {permissionsMicrophone === 'prompt' && <p>Permiso sin asignar</p>}
+      </div>
+
 
       {showForm &&
         (<Form
@@ -293,6 +305,13 @@ export const App = () => {
           handleInputChange={handleInputChange}
         />)}
 
+      {resultFlag && (
+        <ResponseModal
+          data={responseResult}
+          model={model}
+          onClose={onClose}
+          isOpen={isOpen} />
+      )}
     </div>
 
   );

@@ -6,6 +6,7 @@ from flask import Flask, redirect, request, jsonify
 from flask_cors import CORS
 from dataModels.model import DataLoader
 # Abrir el archivo key.txt en modo lectura
+
 with open('key.txt', 'r') as f:
     # Leer la primera línea y quitar espacios en blanco adicionales
     key_value = f.readline().strip()

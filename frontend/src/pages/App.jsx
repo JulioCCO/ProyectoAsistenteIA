@@ -40,6 +40,9 @@ export const App = () => {
   /*Animation*/
   const [isProcessing, setIsProcessing] = useState(false);
 
+  /*input*/
+  const [inputValue, setInputValue] = useState('');
+
   let globalMediaRecorder = undefined;
 
   const handleInputChange = (id, value) => {
@@ -177,36 +180,40 @@ export const App = () => {
   }
 
   const handleTypeOfModel = () => {
-    if (taskTranscription.toLowerCase().includes("emociones")) {
-      setModel("emociones");
-    } else if (taskTranscription.toLowerCase().includes("corazón")) {
-      setModel("corazón");
-    } else if (
-      taskTranscription.toLowerCase().includes("cerebro") ||
-      taskTranscription.toLowerCase().includes("serebro")
-    ) {
-      setModel("cerebro");
-    } else if (taskTranscription.toLowerCase().includes("vino")) {
-      setModel("vino");
-    } else if (taskTranscription.toLowerCase().includes("reclutamiento")) {
-      setModel("reclutamiento");
-    } else if (taskTranscription.toLowerCase().includes("aguacate")) {
-      setModel("aguacate");
-    } else if (taskTranscription.toLowerCase().includes("banco")) {
-      setModel("banco");
-    } else if (taskTranscription.toLowerCase().includes("salario")) {
-      setModel("salario");
-    } else if (taskTranscription.toLowerCase().includes("humor")) {
-      setModel("humor");
-    } else if (
-      taskTranscription.toLowerCase().includes("titanic") ||
-      taskTranscription.toLowerCase().includes("titanik")
-    ) {
-      setModel("titanic");
-    } else if (taskTranscription.toLowerCase().includes("vuelo")) {
-      setModel("vuelo");
-    }
-    else {
+    if (taskTranscription.toLowerCase().includes("toki")) {
+      if (taskTranscription.toLowerCase().includes("emociones")) {
+        setModel("emociones");
+      } else if (taskTranscription.toLowerCase().includes("corazón")) {
+        setModel("corazón");
+      } else if (
+        taskTranscription.toLowerCase().includes("cerebro") ||
+        taskTranscription.toLowerCase().includes("serebro")
+      ) {
+        setModel("cerebro");
+      } else if (taskTranscription.toLowerCase().includes("vino")) {
+        setModel("vino");
+      } else if (taskTranscription.toLowerCase().includes("reclutamiento")) {
+        setModel("reclutamiento");
+      } else if (taskTranscription.toLowerCase().includes("aguacate")) {
+        setModel("aguacate");
+      } else if (taskTranscription.toLowerCase().includes("banco")) {
+        setModel("banco");
+      } else if (taskTranscription.toLowerCase().includes("salario")) {
+        setModel("salario");
+      } else if (taskTranscription.toLowerCase().includes("humor")) {
+        setModel("humor");
+      } else if (
+        taskTranscription.toLowerCase().includes("titanic") ||
+        taskTranscription.toLowerCase().includes("titanik")
+      ) {
+        setModel("titanic");
+      } else if (taskTranscription.toLowerCase().includes("vuelo")) {
+        setModel("vuelo");
+      }
+      else {
+        setModel('error');
+      }
+    } else {
       setModel('error');
     }
     setShowForm(true);
@@ -220,6 +227,11 @@ export const App = () => {
     //setIsOpen(false);
     setResponseResult(undefined);
   };
+  const handleInput = () => {
+    console.log(inputValue);
+    setTaskTranscription('toki' + inputValue);
+    setInputValue('');
+  }
 
   useEffect(() => {
     console.log("useEffect: responseResult", responseResult);
@@ -332,11 +344,20 @@ export const App = () => {
       </div>
 
       <span className="text-slate-400 font-mono mt-8 mb-2">-o intenta-</span>
-      <input
-        type="text"
-        placeholder="Ingrese clave del modelo"
-        className="hover:border hover:border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:border-blue-400"
-      />
+      <div className="text-sm text-center font-medium m-2">
+        <input
+          type="text"
+          placeholder="Ingrese clave del modelo"
+          className="hover:border hover:border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:border-blue-400"
+          onChange={(e) => setInputValue(e.target.value)}
+          value={inputValue}
+        />
+        <button
+          className="m-2 bg-secondary hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          onClick={handleInput}>
+          Aceptar
+        </button>
+      </div>
 
       {showForm && (
         <Form

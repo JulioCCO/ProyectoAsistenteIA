@@ -1,6 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useState } from 'react'
+import { Fragment } from 'react'
 
+
+// eslint-disable-next-line react/prop-types
 export default function ErrorForm({ isOpen, onClose }) {
     //let [isOpen, setIsOpen] = useState(true)
     /*

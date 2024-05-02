@@ -77,7 +77,7 @@ const RecruitmentForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="ssc_p"
-                type="text"
+                type="number"
                 placeholder="ssc_p"
                 onChange={(e) => {
                   handleInputChange("ssc_p", e.target.value)
@@ -92,7 +92,7 @@ const RecruitmentForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="hsc_p"
-                type="text"
+                type="number"
                 placeholder="hsc_p"
                 onChange={(e) => {
                   handleInputChange("hsc_p", e.target.value)
@@ -107,7 +107,7 @@ const RecruitmentForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="degree_p"
-                type="text"
+                type="number"
                 placeholder="degree_p"
                 onChange={(e) => {
                   handleInputChange("degree_p", e.target.value)

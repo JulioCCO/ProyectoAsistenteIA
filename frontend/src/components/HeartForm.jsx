@@ -77,7 +77,7 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="age"
-                type="text"
+                type="number"
                 placeholder="age"
                 onChange={(e) => { handleInputChange("age", e.target.value) }} // Función que se ejecuta cuando se cambia el valor del input
               />
@@ -90,7 +90,9 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="trtbps"
-                type="text"
+                type="number"
+                min={94}
+                max={200}
                 placeholder="trtbps 94-200"
                 onChange={(e) => {
                   handleInputChange("trtbps", e.target.value)
@@ -105,7 +107,9 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="thalachh"
-                type="text"
+                type="number"
+                min={71}
+                max={202}
                 placeholder="thalachh  71-202"
                 onChange={(e) => {
                   handleInputChange("thalachh", e.target.value)
@@ -142,7 +146,9 @@ const HeartForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="oldpeak"
-                type="text"
+                type="number"
+                min={0}
+                max={9.9}
                 placeholder="oldpeak 0.0 - 9.9"
                 onChange={(e) => {
                   handleInputChange("oldpeak", e.target.value)

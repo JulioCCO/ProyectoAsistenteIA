@@ -78,7 +78,7 @@ const WineForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="density"
-                type="text"
+                type="number"
                 placeholder="density"
                 onChange={(e) => {
                   handleInputChange("density", e.target.value)
@@ -93,7 +93,7 @@ const WineForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="alcohol"
-                type="text"
+                type="number"
                 placeholder="alcohol"
                 onChange={(e) => {
                   handleInputChange("alcohol", e.target.value);
@@ -108,7 +108,7 @@ const WineForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="volatile_acidity"
-                type="text"
+                type="number"
                 placeholder="volatile acidity"
                 onChange={(e) => {
                   handleInputChange("volatile_acidity", e.target.value);
@@ -123,7 +123,9 @@ const WineForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="free_sulfur_dioxide"
-                type="text"
+                type="number"
+                min={1}
+                max={289}
                 placeholder="free sulfur dioxide 1-289"
                 onChange={(e) => {
                   handleInputChange("free_sulfur_dioxide", e.target.value);

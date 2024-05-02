@@ -10,7 +10,7 @@ export const EmotionForm = ({ isOpen, onClose, handleInputChange }) => {
     const [permissionsCamera, setPermissionsCamera] = useState("denied");
     const [avaibleVideoDevices, setAvaibleVideoDevices] = useState([]);
     const [selectedVideoDevice, setSelectedVideoDevice] = useState(undefined);
-    
+
     async function handleCameraPermissionState(state) {
         setPermissionsCamera(state);
         if (state === "granted") {
@@ -183,9 +183,9 @@ export const EmotionForm = ({ isOpen, onClose, handleInputChange }) => {
                                     </label>
                                 )}
                                 {/* FALTA MOSTRAR LA CAMARA Y TOMAR FOTO */}
-
-                                <video className="mt-2" ref={videoRef} />
-
+                                <div className="inline-flex mt-2 justify-center w-full">
+                                    <video className="mt-2" ref={videoRef} />
+                                </div>
                                 <button
                                     type="button"
                                     className="inline-flex mt-2 justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-secondary hover:bg-teal-300  text-base font-medium text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"

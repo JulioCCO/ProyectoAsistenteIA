@@ -84,8 +84,6 @@ export const App = () => {
         data = await avocadoPredict(formData);
         break;
       case "emociones":
-        console.log("emociones");
-        console.log(formData);
         data = await sendImage(formData.photo);
         break;
     }
@@ -289,9 +287,8 @@ export const App = () => {
       {permissionsMicrophone === "granted" && !isRecording && (
         <button
           onClick={handleClickStartRecord}
-          className={`relative overflow-hidden ${
-            isProcessing ? "animate-pulse" : ""
-          }`}
+          className={`relative overflow-hidden ${isProcessing ? "animate-pulse" : ""
+            }`}
           style={{ width: "fit-content" }}
         >
           <AnimatedGif

@@ -10,7 +10,7 @@ import FlightForm from "./FlightForm";
 import MoodForm from "./MoodForm";
 import SalaryForm from "./SalaryForm";
 import TitanicForm from "./TitanicForm";
-import { ErrorForm } from './ErrorForm';
+import ErrorForm from './ErrorForm';
 
 // eslint-disable-next-line react/prop-types
 

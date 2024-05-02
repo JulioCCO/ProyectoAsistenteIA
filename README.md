@@ -20,6 +20,9 @@ choco instsall ffmpeg
 pip install -U openai-whisper
 ```
 
+> [!WARNING]
+> You also need to create the directories `images` and `audios` inside the `backend` folder for the correct operation of the assistant
+
 ### Backend dependencies
 
 For the execution of the backend of this project, the following complements must be installed:

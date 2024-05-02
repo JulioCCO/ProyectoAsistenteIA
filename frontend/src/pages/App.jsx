@@ -58,6 +58,12 @@ export const App = () => {
   }
   const onSubmit = async () => {
     let data = null;
+    if (Object.keys(formData).length === 0) {
+      console.log("No hay datos en el formulario");
+      setShowForm(false);
+      setFormData({});
+      return;
+  }
     switch (model) {
       case "vuelo":
         data = await flightPredict(formData);

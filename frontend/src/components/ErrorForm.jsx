@@ -1,17 +1,17 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 
-export default function ErrorForm() {
-    let [isOpen, setIsOpen] = useState(true)
-
-    function closeModal() {
-        setIsOpen(false)
-    }
-
+export default function ErrorForm({ isOpen, onClose }) {
+    //let [isOpen, setIsOpen] = useState(true)
+    /*
+        function closeModal() {
+            setIsOpen(false)
+        }
+    */
     return (
         <>
             <Transition appear show={isOpen} as={Fragment}>
-                <Dialog as="div" className="relative z-10" onClose={closeModal}>
+                <Dialog as="div" className="relative z-10" onClose={onClose}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -53,7 +53,7 @@ export default function ErrorForm() {
                                         <button
                                             type="button"
                                             className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                            onClick={closeModal}
+                                            onClick={onClose}
                                         >
                                             Aceptar
                                         </button>

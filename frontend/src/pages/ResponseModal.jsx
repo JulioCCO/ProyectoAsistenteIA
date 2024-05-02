@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 export const ResponseModal = ({ data, model, onClose, isOpen }) => {
     const [textDisplay, setTextDisplay] = useState('');
 
-
     const selectText = () => {
         let dataText = ''
         switch (model) {
@@ -45,6 +44,9 @@ export const ResponseModal = ({ data, model, onClose, isOpen }) => {
                 } else {
                     dataText = `La emocion dominante es: ${data.dominant_emotion}`
                 }
+                break;
+            default:
+                dataText = `Error al procesar el resultado, verifique los datos ingresados.`
                 break;
         }
         setTextDisplay(dataText)

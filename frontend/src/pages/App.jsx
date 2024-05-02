@@ -49,7 +49,10 @@ export const App = () => {
       [id]: value,
     });
   };
-
+  const onSubmitError = async () => {
+    setShowForm(false);
+    setFormData({});
+  }
   const onSubmit = async () => {
     let data = null;
     switch (model) {
@@ -89,8 +92,11 @@ export const App = () => {
           data = await sendImage(formData.photo);
         }
         else {
-          data = 'error'
+          data = 'error';
         }
+        break;
+      default:
+        data = 'error';
         break;
     }
     setShowForm(false);
@@ -200,6 +206,9 @@ export const App = () => {
     } else if (taskTranscription.toLowerCase().includes("vuelo")) {
       setModel("vuelo");
     }
+    else {
+      setModel('error');
+    }
     setShowForm(true);
     setTaskTranscription(undefined);
     setIsProcessing(false);
@@ -208,16 +217,9 @@ export const App = () => {
   const onClose = () => {
     setResultFlag(false);
     setModel(undefined);
-    setIsOpen(false);
+    //setIsOpen(false);
     setResponseResult(undefined);
   };
-
-  const handleSubmitInput = (e) => {
-    // Prevent the browser from reloading the page
-    e.preventDefault();
-    const form = e.target;
-    console.log(form)
-  }
 
   useEffect(() => {
     console.log("useEffect: responseResult", responseResult);
@@ -340,6 +342,7 @@ export const App = () => {
         <Form
           model={model}
           onSubmit={onSubmit}
+          onSubmitError={onSubmitError}
           handleInputChange={handleInputChange}
         />
       )}

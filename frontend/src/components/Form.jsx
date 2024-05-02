@@ -13,13 +13,20 @@ import TitanicForm from "./TitanicForm";
 import ErrorForm from './ErrorForm';
 
 // eslint-disable-next-line react/prop-types
-
-const Form = ({ model, onSubmit, handleInputChange }) => {
+const Form = ({ model, onSubmit, handleInputChange, onSubmitError }) => {
   const [isOpen, setIsOpen] = useState(true);
+
   const onClose = () => {
     onSubmit();
     setIsOpen(false);
   };
+
+  const onCloseErrorModal = () => {
+    //onSubmit();
+    onSubmitError();
+    setIsOpen(false);
+  };
+
   if (model == "aguacate") {
     return (
       <AvocadoForm isOpen={isOpen} onClose={onClose} handleInputChange={handleInputChange} />
@@ -66,7 +73,7 @@ const Form = ({ model, onSubmit, handleInputChange }) => {
     );
   } else {
     return (
-      <ErrorForm />
+      <ErrorForm isOpen={isOpen} onClose={onCloseErrorModal} />
     );
   }
 };

@@ -10,7 +10,10 @@ import FlightForm from "./FlightForm";
 import MoodForm from "./MoodForm";
 import SalaryForm from "./SalaryForm";
 import TitanicForm from "./TitanicForm";
+import { ErrorForm } from './ErrorForm';
+
 // eslint-disable-next-line react/prop-types
+
 const Form = ({ model, onSubmit, handleInputChange }) => {
   const [isOpen, setIsOpen] = useState(true);
   const onClose = () => {
@@ -63,7 +66,7 @@ const Form = ({ model, onSubmit, handleInputChange }) => {
     );
   } else {
     return (
-      null
+      <ErrorForm />
     );
   }
 };

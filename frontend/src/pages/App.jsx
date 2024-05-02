@@ -208,6 +208,13 @@ export const App = () => {
     setResponseResult(undefined);
   };
 
+  const handleSubmitInput = (e) => {
+    // Prevent the browser from reloading the page
+    e.preventDefault();
+    const form = e.target;
+    console.log(form)
+  }
+
   useEffect(() => {
     console.log("useEffect: responseResult", responseResult);
     if (responseResult !== undefined) {
@@ -282,7 +289,7 @@ export const App = () => {
       {permissionsMicrophone === "granted" && !isRecording && (
         <button
           onClick={handleClickStartRecord}
-          className={`relative overflow-hidden rounded-full ${
+          className={`relative overflow-hidden ${
             isProcessing ? "animate-pulse" : ""
           }`}
           style={{ width: "fit-content" }}

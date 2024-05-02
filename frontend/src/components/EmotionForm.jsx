@@ -10,8 +10,7 @@ export const EmotionForm = ({ isOpen, onClose, handleInputChange }) => {
     const [permissionsCamera, setPermissionsCamera] = useState("denied");
     const [avaibleVideoDevices, setAvaibleVideoDevices] = useState([]);
     const [selectedVideoDevice, setSelectedVideoDevice] = useState(undefined);
-    const [photoData, setPhotoData] = useState(undefined);
-
+    
     async function handleCameraPermissionState(state) {
         setPermissionsCamera(state);
         if (state === "granted") {

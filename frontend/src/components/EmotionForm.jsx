@@ -78,7 +78,7 @@ export const EmotionForm = ({ isOpen, onClose, handleInputChange }) => {
         // Convertir la imagen a un Blob
         const blobData = dataURItoBlob(imageDataURI);
         console.log('blobData', blobData);
-        setPhotoData(blobData);
+        //setPhotoData(blobData);
         handleInputChange('photo', blobData);
     }
 

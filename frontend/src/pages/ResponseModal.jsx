@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 export const ResponseModal = ({ data, model, onClose, isOpen }) => {
     const [textDisplay, setTextDisplay] = useState('');
 
+
     const selectText = () => {
         let dataText = ''
         switch (model) {
@@ -15,31 +16,31 @@ export const ResponseModal = ({ data, model, onClose, isOpen }) => {
                 dataText = `Con los datos ingresados se tiene que: ${data === true ? 'La persona es propensa a ataques cerebrovasculares.' : 'La persona no es propensa a ataques cerebrovasculares.'}`
                 break;
             case "vino":
-                data = `La calidad del vino es: ${data}.`
+                dataText = `La calidad del vino es: ${data}.`
                 break;
             case "reclutamiento":
-                data = `Segun el modelo el estudiante: ${data === true ? 'Va hacer contratado' : 'No va hacer contratado.'}`
+                dataText = `Segun el modelo el estudiante: ${data === true ? 'Va hacer contratado' : 'No va hacer contratado.'}`
                 break;
             case "aguacate":
-                data = `El precio del aguacate es: ${data}`
+                dataText = `El precio del aguacate es: ${data}`
                 break;
             case "banco":
-                data = `Segun los datos el resultado es: ${data === true ? 'La persona va a dejar el banco' : 'La persona no va a dejar el banco'}`
+                dataText = `Segun los datos el resultado es: ${data === true ? 'La persona va a dejar el banco' : 'La persona no va a dejar el banco'}`
                 break;
             case "salario":
-                data = `El salario del emplado es de: ${data}`
+                dataText = `El salario del emplado es de: ${data}`
                 break;
             case "humor":
-                data = `La persona tiene: ${data}`
+                dataText = `La persona tiene: ${data}`
                 break;
             case "titanic":
-                data = `La persona: ${data === true ? 'va a sobrevivir al accidente del Titanic' : 'no va a sobrevivir al accidente del Titanic'}`
+                dataText = `La persona: ${data === true ? 'va a sobrevivir al accidente del Titanic' : 'no va a sobrevivir al accidente del Titanic'}`
                 break;
             case "vuelo":
-                data = `El costo del tiquete de avion es de: ${data}`
+                dataText = `El costo del tiquete de avion es de: ${data}`
                 break;
             case "emociones":
-                data = `No response`
+                dataText = `La emocion dominante es: ${data.dominant_emotion}`
                 break;
         }
         setTextDisplay(dataText)
@@ -116,6 +117,11 @@ export const ResponseModal = ({ data, model, onClose, isOpen }) => {
                             </Dialog.Title>
                             <div >
                                 <p className="text-sm text-center font-medium m-2">{textDisplay}</p>
+                                {model === 'emociones' && (
+                                    data.emotions.map((emotion) => (
+                                        <p key={emotion[0]} className="text-sm text-center font-medium m-2">{`${emotion[0]}: ${emotion[1]}`}</p>
+                                    ))
+                                )}
                                 <button
                                     type="button"
                                     className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-secondary hover:bg-teal-300  text-base font-medium text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"

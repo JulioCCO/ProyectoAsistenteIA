@@ -213,6 +213,7 @@ export const App = () => {
   };
 
   useEffect(() => {
+    console.log('useEffect: responseResult', responseResult);
     if (responseResult !== undefined) {
       setResultFlag(true);
       setIsOpen(true);
@@ -276,7 +277,9 @@ export const App = () => {
           </select>
         </label>
       )}
-
+      <input
+        placeholder="Ingrese clave del modelo"
+      />
       {permissionsMicrophone === "granted" && !isRecording && (
         <button onClick={handleClickStartRecord} >
           <AnimatedGif src="https://media.tenor.com/CigpzapemsoAAAAi/hi-robot.gif" alt="Animated GIF" />
@@ -305,7 +308,7 @@ export const App = () => {
           handleInputChange={handleInputChange}
         />)}
 
-      {resultFlag && (
+      {resultFlag === true && (
         <ResponseModal
           data={responseResult}
           model={model}

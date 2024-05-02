@@ -33,8 +33,7 @@ export const sendImage = async (imageFile) => {
                 'Content-Type': 'multipart/form-data'
             }
         });
-        console.log(response)
-        return response;
+        return response.data.image_path;
     } catch (error) {
         console.error('Error al enviar la imagen al backend:', error);
         throw new Error(`Error al enviar la imagen al backend: ${error.message}`);

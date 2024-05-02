@@ -211,7 +211,11 @@ def processEmotion(ruta):
         # Use the top Emotion() function to call for the dominant emotion in the image
         dominant_emotion, emotion_score = emo_detector.top_emotion(test_image_one)
         print(dominant_emotion, emotion_score)
-        return {'emotions': captured_emotions[0]['emotions'], 'dominant_emotion': dominant_emotion}
+
+        # Convertir el diccionario de emociones en una lista de tuplas (emoción, valor)
+        emotions_list = [(emotion, value) for emotion, value in captured_emotions[0]['emotions'].items()]
+
+        return {'emotions': emotions_list, 'dominant_emotion': dominant_emotion}
 
     except Exception as e:
         # Manejar excepciones e imprimir el mensaje de error

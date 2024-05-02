@@ -103,7 +103,7 @@ const BankForm = ({ isOpen, onClose, handleInputChange}) => {
                 className="block text-gray-700 text-sm font-bold mb-2 mt-2"
                 htmlFor="balance"
               >
-                Balance actual de la cuenta (dos decimales)
+                Balance actual de la cuenta
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

@@ -17,7 +17,6 @@ import Form from "../components/Form";
 import { ResponseModal } from "./ResponseModal";
 
 export const App = () => {
-
   /*Audio*/
   const [permissionsMicrophone, setPermissionsMicrophone] = useState("denied");
   const [avaibleAudioDevices, setAvaibleAudioDevices] = useState([]);
@@ -37,6 +36,9 @@ export const App = () => {
   const [responseResult, setResponseResult] = useState(undefined);
   const [resultFlag, setResultFlag] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
+
+  /*Animation*/
+  const [isProcessing, setIsProcessing] = useState(false);
 
   let globalMediaRecorder = undefined;
 
@@ -82,7 +84,7 @@ export const App = () => {
         data = await avocadoPredict(formData);
         break;
       case "emociones":
-        console.log('emociones');
+        console.log("emociones");
         console.log(formData);
         data = await sendImage(formData.photo);
         break;
@@ -90,9 +92,7 @@ export const App = () => {
     setShowForm(false);
     setFormData({});
     setResponseResult(data);
-    console.log('data de la respuesta del modelo', data);
-
-
+    console.log("data de la respuesta del modelo", data);
   };
 
   const sendBlobToBackend = async (blob) => {
@@ -167,42 +167,38 @@ export const App = () => {
   }
 
   const handleTypeOfModel = () => {
-    if (taskTranscription.toLowerCase().includes('emociones')) {
-      setModel('emociones')
-    }
-    else if (taskTranscription.toLowerCase().includes('corazón')) {
-      setModel('corazón');
-    }
-    else if (taskTranscription.toLowerCase().includes('cerebro') || taskTranscription.toLowerCase().includes('serebro')) {
-      setModel('cerebro');
-    }
-    else if (taskTranscription.toLowerCase().includes('vino')) {
-      setModel('vino');
-    }
-    else if (taskTranscription.toLowerCase().includes('reclutamiento')) {
-      setModel('reclutamiento');
-    }
-    else if (taskTranscription.toLowerCase().includes('aguacate')) {
-      setModel('aguacate');
-    }
-    else if (taskTranscription.toLowerCase().includes('banco')) {
-      setModel('banco');
-    }
-    else if (taskTranscription.toLowerCase().includes('salario')) {
-      setModel('salario');
-    }
-    else if (taskTranscription.toLowerCase().includes('humor')) {
-      setModel('humor');
-    }
-    else if (taskTranscription.toLowerCase().includes('titanic') || taskTranscription.toLowerCase().includes('titanik')) {
-      setModel('titanic');
-    }
-    else if (taskTranscription.toLowerCase().includes('vuelo')) {
-      setModel('vuelo');
+    if (taskTranscription.toLowerCase().includes("emociones")) {
+      setModel("emociones");
+    } else if (taskTranscription.toLowerCase().includes("corazón")) {
+      setModel("corazón");
+    } else if (
+      taskTranscription.toLowerCase().includes("cerebro") ||
+      taskTranscription.toLowerCase().includes("serebro")
+    ) {
+      setModel("cerebro");
+    } else if (taskTranscription.toLowerCase().includes("vino")) {
+      setModel("vino");
+    } else if (taskTranscription.toLowerCase().includes("reclutamiento")) {
+      setModel("reclutamiento");
+    } else if (taskTranscription.toLowerCase().includes("aguacate")) {
+      setModel("aguacate");
+    } else if (taskTranscription.toLowerCase().includes("banco")) {
+      setModel("banco");
+    } else if (taskTranscription.toLowerCase().includes("salario")) {
+      setModel("salario");
+    } else if (taskTranscription.toLowerCase().includes("humor")) {
+      setModel("humor");
+    } else if (
+      taskTranscription.toLowerCase().includes("titanic") ||
+      taskTranscription.toLowerCase().includes("titanik")
+    ) {
+      setModel("titanic");
+    } else if (taskTranscription.toLowerCase().includes("vuelo")) {
+      setModel("vuelo");
     }
     setShowForm(true);
     setTaskTranscription(undefined);
-
+    setIsProcessing(false);
   };
 
   const onClose = () => {
@@ -213,12 +209,12 @@ export const App = () => {
   };
 
   useEffect(() => {
-    console.log('useEffect: responseResult', responseResult);
+    console.log("useEffect: responseResult", responseResult);
     if (responseResult !== undefined) {
       setResultFlag(true);
       setIsOpen(true);
     }
-  }, [responseResult])
+  }, [responseResult]);
 
   useEffect(() => {
     if (taskTranscription !== undefined) {
@@ -237,6 +233,7 @@ export const App = () => {
       let largo = savedAudios.length - 1;
       if (largo < 0) largo = 0;
       sendBlobToBackend(savedAudios[largo][0]);
+      setIsProcessing(true);
     }
   }, [isRecording, savedAudios]);
 
@@ -254,13 +251,17 @@ export const App = () => {
           await handlePermissionState(onChangeResult.target.state);
         };
       });
-
   }, []);
 
   return (
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
+      <div className="bg-[#31bbb4] py-4 px-6 flex items-center justify-center w-full">
+        <h1 className="text-2xl font-bold text-white">
+          Toki Asistente Inteligente
+        </h1>
+      </div>
       {permissionsMicrophone === "granted" && (
         <label className="text-lg text-center font-medium m-2 text-secondary">
           Dispositivos de audio:
@@ -277,45 +278,70 @@ export const App = () => {
           </select>
         </label>
       )}
-      <input
-        placeholder="Ingrese clave del modelo"
-      />
-      {permissionsMicrophone === "granted" && !isRecording && (
-        <button onClick={handleClickStartRecord} >
-          <AnimatedGif src="https://media.tenor.com/CigpzapemsoAAAAi/hi-robot.gif" alt="Animated GIF" />
 
+      {permissionsMicrophone === "granted" && !isRecording && (
+        <button
+          onClick={handleClickStartRecord}
+          className={`relative overflow-hidden rounded-full ${
+            isProcessing ? "animate-pulse" : ""
+          }`}
+          style={{ width: "fit-content" }}
+        >
+          <AnimatedGif
+            src="https://media.tenor.com/CigpzapemsoAAAAi/hi-robot.gif"
+            alt="Animated GIF"
+          />
         </button>
       )}
 
       {permissionsMicrophone === "granted" && isRecording && (
-        <button onClick={handleClickStopRecord} >
-          <AnimatedGif src="https://media.tenor.com/CigpzapemsoAAAAi/hi-robot.gif" alt="Animated GIF" />
-          Recording...
-        </button>
+        <>
+          <button onClick={handleClickStopRecord} className="relative">
+            <AnimatedGif
+              src="https://media.tenor.com/CigpzapemsoAAAAi/hi-robot.gif"
+              alt="Animated GIF"
+            />
+          </button>
+          <span className="flex items-center justify-center text-blue-500 font-bold animate-pulse">
+            Recording...
+          </span>
+        </>
       )}
-
       <div className="text-sm text-center font-medium m-2">
-        {permissionsMicrophone === 'denied' && <p>No tiene permiso de usar el microfono</p>}
-        {permissionsMicrophone === 'granted' && <p>Uso de microfono permitido</p>}
-        {permissionsMicrophone === 'prompt' && <p>Permiso sin asignar</p>}
+        {permissionsMicrophone === "denied" && (
+          <p className="text-red-500">No tiene permiso de usar el micrófono</p>
+        )}
+        {permissionsMicrophone === "granted" && (
+          <p className="text-green-500">Uso de micrófono permitido</p>
+        )}
+        {permissionsMicrophone === "prompt" && (
+          <p className="text-yellow-500">Permiso sin asignar</p>
+        )}
       </div>
 
+      <span className="text-slate-400 font-mono mt-8 mb-2">-o intenta-</span>
+      <input
+        type="text"
+        placeholder="Ingrese clave del modelo"
+        className="hover:border hover:border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:border-blue-400"
+      />
 
-      {showForm &&
-        (<Form
+      {showForm && (
+        <Form
           model={model}
           onSubmit={onSubmit}
           handleInputChange={handleInputChange}
-        />)}
+        />
+      )}
 
       {resultFlag === true && (
         <ResponseModal
           data={responseResult}
           model={model}
           onClose={onClose}
-          isOpen={isOpen} />
+          isOpen={isOpen}
+        />
       )}
     </div>
-
   );
 };

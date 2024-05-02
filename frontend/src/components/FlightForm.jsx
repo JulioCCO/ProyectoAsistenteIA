@@ -190,7 +190,7 @@ const FlightForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="duration"
-                type="text"
+                type="number"
                 placeholder="Duración del vuelo"
                 onChange={(e) => {
                   const inputValue = e.target.value;
@@ -214,7 +214,7 @@ const FlightForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="days_left"
-                type="text"
+                type="number"
                 placeholder="Numero de días"
                 onChange={(e) => {
                   handleInputChange("days_left", e.target.value);

@@ -260,7 +260,7 @@ const SalaryForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="age"
-                type="text"
+                type="number"
                 placeholder="edad"
                 onChange={(e) => {
                   const inputValue = e.target.value;
@@ -339,7 +339,7 @@ const SalaryForm = ({ isOpen, onClose, handleInputChange }) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="years_of_experience"
-                type="text"
+                type="number"
                 placeholder="puntaje crediticio"
                 onChange={(e) => {
                   handleInputChange("years_of_experience", e.target.value);

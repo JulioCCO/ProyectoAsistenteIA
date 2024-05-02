@@ -123,7 +123,7 @@ const TitanicForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="age"
-                type="text"
+                type="number"
                 placeholder="age"
                 onChange={(e) => {
                   handleInputChange("age", e.target.value)
@@ -153,7 +153,7 @@ const TitanicForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="parch"
-                type="text"
+                type="number"
                 placeholder="numero de productos"
                 onChange={(e) => {
                   handleInputChange("parch", e.target.value);
@@ -168,7 +168,7 @@ const TitanicForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="fare"
-                type="text"
+                type="number"
                 placeholder="fare"
                 onChange={(e) => {
                     const inputValue = e.target.value;

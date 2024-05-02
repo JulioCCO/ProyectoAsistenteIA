@@ -78,7 +78,7 @@ const BankForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="age"
-                type="text"
+                type="number"
                 placeholder="edad"
                 onChange={(e) => {
                   handleInputChange("age", e.target.value)
@@ -108,7 +108,7 @@ const BankForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="balance"
-                type="text"
+                type="number"
                 placeholder="balance"
                 onChange={(e) => {
                     const inputValue = e.target.value;
@@ -132,7 +132,7 @@ const BankForm = ({ isOpen, onClose, handleInputChange}) => {
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="credit_score"
-                type="text"
+                type="number"
                 placeholder="puntaje crediticio"
                 onChange={(e) => {
                   handleInputChange("credit_score", e.target.value);

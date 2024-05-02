@@ -84,7 +84,13 @@ export const App = () => {
         data = await avocadoPredict(formData);
         break;
       case "emociones":
-        data = await sendImage(formData.photo);
+        console.log('formData.photo', formData.photo)
+        if (formData.photo !== undefined) {
+          data = await sendImage(formData.photo);
+        }
+        else {
+          data = 'error'
+        }
         break;
     }
     setShowForm(false);

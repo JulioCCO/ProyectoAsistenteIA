@@ -40,7 +40,11 @@ export const ResponseModal = ({ data, model, onClose, isOpen }) => {
                 dataText = `El costo del tiquete de avion es de: ${data}`
                 break;
             case "emociones":
-                dataText = `La emocion dominante es: ${data.dominant_emotion}`
+                if (data === 'error') {
+                    dataText = 'Error no se proporciono una imagen.'
+                } else {
+                    dataText = `La emocion dominante es: ${data.dominant_emotion}`
+                }
                 break;
         }
         setTextDisplay(dataText)
@@ -117,7 +121,7 @@ export const ResponseModal = ({ data, model, onClose, isOpen }) => {
                             </Dialog.Title>
                             <div >
                                 <p className="text-sm text-center font-medium m-2">{textDisplay}</p>
-                                {model === 'emociones' && (
+                                {(model === 'emociones' && data !== 'error') && (
                                     data.emotions.map((emotion) => (
                                         <p key={emotion[0]} className="text-sm text-center font-medium m-2">{`${emotion[0]}: ${emotion[1]}`}</p>
                                     ))

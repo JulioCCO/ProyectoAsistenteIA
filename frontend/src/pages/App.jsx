@@ -63,7 +63,7 @@ export const App = () => {
       setShowForm(false);
       setFormData({});
       return;
-  }
+    }
     switch (model) {
       case "vuelo":
         data = await flightPredict(formData);
@@ -187,33 +187,43 @@ export const App = () => {
 
   const handleTypeOfModel = () => {
     if (taskTranscription.toLowerCase().includes("toki")) {
-      if (taskTranscription.toLowerCase().includes("emociones")) {
+      if (taskTranscription.toLowerCase().includes("emociones") ||
+        taskTranscription.toLowerCase().includes("emotions")) {
         setModel("emociones");
-      } else if (taskTranscription.toLowerCase().includes("corazón")) {
+      } else if (taskTranscription.toLowerCase().includes("corazón") ||
+        taskTranscription.toLowerCase().includes("heart")) {
         setModel("corazón");
       } else if (
         taskTranscription.toLowerCase().includes("cerebro") ||
-        taskTranscription.toLowerCase().includes("serebro")
+        taskTranscription.toLowerCase().includes("serebro") ||
+        taskTranscription.toLowerCase().includes("brain")
       ) {
         setModel("cerebro");
-      } else if (taskTranscription.toLowerCase().includes("vino")) {
+      } else if (taskTranscription.toLowerCase().includes("vino") ||
+        taskTranscription.toLowerCase().includes("wine")) {
         setModel("vino");
-      } else if (taskTranscription.toLowerCase().includes("reclutamiento")) {
+      } else if (taskTranscription.toLowerCase().includes("reclutamiento") ||
+        taskTranscription.toLowerCase().includes("hiring")) {
         setModel("reclutamiento");
-      } else if (taskTranscription.toLowerCase().includes("aguacate")) {
+      } else if (taskTranscription.toLowerCase().includes("aguacate") ||
+        taskTranscription.toLowerCase().includes("avocado")) {
         setModel("aguacate");
-      } else if (taskTranscription.toLowerCase().includes("banco")) {
+      } else if (taskTranscription.toLowerCase().includes("banco") ||
+        taskTranscription.toLowerCase().includes("bank")) {
         setModel("banco");
-      } else if (taskTranscription.toLowerCase().includes("salario")) {
+      } else if (taskTranscription.toLowerCase().includes("salario") ||
+        taskTranscription.toLowerCase().includes("salary")) {
         setModel("salario");
-      } else if (taskTranscription.toLowerCase().includes("humor")) {
+      } else if (taskTranscription.toLowerCase().includes("humor") ||
+        taskTranscription.toLowerCase().includes("mood")) {
         setModel("humor");
       } else if (
         taskTranscription.toLowerCase().includes("titanic") ||
         taskTranscription.toLowerCase().includes("titanik")
       ) {
         setModel("titanic");
-      } else if (taskTranscription.toLowerCase().includes("vuelo")) {
+      } else if (taskTranscription.toLowerCase().includes("vuelo") ||
+        taskTranscription.toLowerCase().includes("flight")) {
         setModel("vuelo");
       }
       else {
@@ -235,7 +245,7 @@ export const App = () => {
   };
   const handleInput = () => {
     console.log(inputValue);
-    setTaskTranscription('toki' + inputValue);
+    setTaskTranscription('toki ' + inputValue);
     setInputValue('');
   }
 

@@ -4,18 +4,11 @@ import whisper
 from flask import Flask, redirect, request, jsonify
 from flask_cors import CORS
 from dataModels.model import DataLoader
-from tensorflow.keras import layers
-from tensorflow.keras.saving import register_keras_serializable
-import pandas as pd
-import numpy as np
 import tensorflow as tf
+from tensorflow.keras.models import load_model
 from tensorflow import keras
-from keras.callbacks import Callback,ModelCheckpoint
-import matplotlib.pyplot as plt
-from IPython import display
-from jiwer import wer
-import random
-import time
+import numpy as np
+from flask import Flask, request, jsonify
 
 
 # Abrir el archivo key.txt en modo lectura
@@ -143,22 +136,19 @@ def hello_world():
 def getAudioTask():
     if request.method == 'POST':
         try:
-            # Verificar si se envió un archivo
-            if 'file' not in request.files:
-                return 'No se envió ningún archivo', 400
-
-            # Obtener el archivo enviado
-            audio_file = request.files['file']
-
-            #audio_file.save(f'audios/{audio_file.filename}.mp3')
-            audio_file.save(f'audios/{audio_file.filename}.wav')
+            # # Verificar si se envió un archivo
+            # if 'file' not in request.files:
+            #     return 'No se envió ningún archivo', 400
+            #
+            # # Obtener el archivo enviado
+            # audio_file = request.files['file']
+            #
+            # audio_file.save(f'audios/{audio_file.filename}.mp3')
 
             # Devolver una respuesta exitosa si es necesario
-            path = r"audios\blob.wav"
+            path = r"audios\test.wav"
             print('path: ', path)
-            #text = transcribe_audio(path)
-            text = predict_single_sample(path)
-            print(text)
+            text = predict_text_from_audio(path)
 
             return {'message': 'Archivo de audio recibido correctamente', 'transcription': text}, 200
         except Exception as e:
@@ -240,76 +230,69 @@ def processEmotion(ruta):
         return None
 
 
-
 def CTCLoss(y_true, y_pred):
-    try:
-        # Compute the training-time loss value
-        batch_len = tf.cast(tf.shape(y_true)[0], dtype="int64")
-        input_length = tf.cast(tf.shape(y_pred)[1], dtype="int64")
-        label_length = tf.cast(tf.shape(y_true)[1], dtype="int64")
+    # Compute the training-time loss value
+    batch_len = tf.cast(tf.shape(y_true)[0], dtype="int64")
+    input_length = tf.cast(tf.shape(y_pred)[1], dtype="int64")
+    label_length = tf.cast(tf.shape(y_true)[1], dtype="int64")
 
-        input_length = input_length * tf.ones(shape=(batch_len, 1), dtype="int64")
-        label_length = label_length * tf.ones(shape=(batch_len, 1), dtype="int64")
+    input_length = input_length * tf.ones(shape=(batch_len, 1), dtype="int64")
+    label_length = label_length * tf.ones(shape=(batch_len, 1), dtype="int64")
 
-        loss = keras.backend.ctc_batch_cost(y_true, y_pred, input_length, label_length)
-        return loss
-    except Exception as e:
-        # Manejar excepciones e imprimir el mensaje de error
-        print(f"Error al cargar CTCLOSS: {e}")
-        return None
+    loss = keras.backend.ctc_batch_cost(y_true, y_pred, input_length, label_length)
+    return loss
 
-# Función para preprocesar una muestra individual
-def preprocess_single_sample(wav_file):
-    try:
-        file = tf.io.read_file(wav_file)
-        audio, sample_rate = tf.audio.decode_wav(file, desired_channels=1)
-        audio = tf.squeeze(audio, axis=-1)
-        audio = tf.cast(audio, tf.float32)
-        spectrogram = tf.signal.stft(audio, frame_length=256, frame_step=160, fft_length=384)
-        spectrogram = tf.abs(spectrogram)
-        spectrogram = tf.math.pow(spectrogram, 0.5)
-        means = tf.math.reduce_mean(spectrogram, 1, keepdims=True)
-        stddevs = tf.math.reduce_std(spectrogram, 1, keepdims=True)
-        spectrogram = (spectrogram - means) / (stddevs + 1e-10)
-        spectrogram = tf.expand_dims(spectrogram, axis=0)
-        return spectrogram
-    except Exception as e:
-        # Manejar excepciones e imprimir el mensaje de error
-        print(f"Error al preprocesar_single_sample: {e}")
-        return None
 
-# Función para decodificar la predicción individual usando la lógica de batch
-def decode_single_prediction(pred):
-    try:
-        # The set of characters accepted in the transcription.
-        characters = [x for x in "abcdefghijklmnopqrstuvwxyz'?! "]
-        # Mapping characters to integers
-        char_to_num = keras.layers.StringLookup(vocabulary=characters, oov_token="")
-        # Mapping integers back to original characters
-        num_to_char = keras.layers.StringLookup(vocabulary=char_to_num.get_vocabulary(), oov_token="", invert=True)
-        input_len = np.ones(pred.shape[0]) * pred.shape[1]
-        results = keras.backend.ctc_decode(pred, input_length=input_len, greedy=True)[0][0]
-        result = tf.strings.reduce_join(num_to_char(results[0])).numpy().decode("utf-8")
-        return result
-    except Exception as e:
-        # Manejar excepciones e imprimir el mensaje de error
-        print(f"Error al decodificar_prediccion: {e}")
-        return None
+# Cargar el modelo entrenado
+model = load_model('dataModels/models/speech_to_text.h5', custom_objects={"CTCLoss": CTCLoss})
 
-# Función para predecir una muestra individual
-def predict_single_sample( wav_file):
-    try:
-        model = keras.models.load_model("dataModels/models/speech_to_text.h5", custom_objects={"CTCLoss": CTCLoss})
-        spectrogram = preprocess_single_sample(wav_file)
-        prediction = model.predict(spectrogram)
-        decoded_prediction = decode_single_prediction(prediction)
-        return decoded_prediction
-    except Exception as e:
-        # Manejar excepciones e imprimir el mensaje de error
-        print(f"Error al predecir_audio: {e}")
-        return None
+# Parámetros de preprocesamiento
+frame_length = 256
+frame_step = 160
+fft_length = 384
 
+# The set of characters accepted in the transcription.
+characters = [x for x in "abcdefghijklmnopqrstuvwxyz'?! "]
+# Mapping characters to integers
+char_to_num = keras.layers.StringLookup(vocabulary=characters, oov_token="")
+# Mapping integers back to original characters
+num_to_char = keras.layers.StringLookup(
+    vocabulary=char_to_num.get_vocabulary(), oov_token="", invert=True
+)
+
+# Define the function to encode a single sample
+def encode_single_sample(wav_file):
+    audio, sample_rate = tf.audio.decode_wav(wav_file, desired_channels=1)
+    audio = tf.squeeze(audio, axis=-1)  # Ensure it's a 1-D tensor
+
+    audio = tf.cast(audio, tf.float32)
+    spectrogram = tf.signal.stft(
+        audio, frame_length=frame_length, frame_step=frame_step, fft_length=fft_length
+    )
+    spectrogram = tf.abs(spectrogram)
+    spectrogram = tf.math.pow(spectrogram, 0.5)
+    means = tf.math.reduce_mean(spectrogram, 1, keepdims=True)
+    stddevs = tf.math.reduce_std(spectrogram, 1, keepdims=True)
+    spectrogram = (spectrogram - means) / (stddevs + 1e-10)
+
+    return spectrogram
+
+# Define the function to predict text from audio
+def predict_text_from_audio(file_path):
+    with open(file_path, 'rb') as f:
+        wav_file = f.read()
+    spectrogram = encode_single_sample(wav_file)
+    spectrogram = tf.expand_dims(spectrogram, axis=0)  # Add batch dimension
+    prediction = model.predict(spectrogram)
+    # Decode the prediction using CTC decoder
+    input_length = np.ones(prediction.shape[0]) * prediction.shape[1]
+    decoded = tf.keras.backend.ctc_decode(prediction, input_length=input_length)[0][0]
+    decoded = tf.keras.backend.get_value(decoded)
+
+    text = ''.join([num_to_char(x).numpy().decode('utf-8') for x in decoded[0] if x != -1])
+    print(text)
+    return text
 
 if __name__ == "__main__":
     app.run(debug=True)
-
+    getAudioTask()

@@ -15,6 +15,7 @@ import { flightPredict } from "../../client/api";
 
 import Form from "../components/Form";
 import { ResponseModal } from "./ResponseModal";
+import { encode } from 'wav-encoder';
 
 export const App = () => {
   /*Audio*/
@@ -117,7 +118,9 @@ export const App = () => {
   const sendBlobToBackend = async (blob) => {
     try {
       console.log(blob, 'bloooop')
-      let data = await sendBlob(blob);
+      const webmToWav = await convertWebmToWav(blob)
+      console.log('webmToWav', webmToWav);
+      let data = await sendBlob(webmToWav);
       setTaskTranscription(data);
     } catch (error) {
       console.error("Error al enviar el audio al backend:", error);
@@ -241,11 +244,47 @@ export const App = () => {
     //setIsOpen(false);
     setResponseResult(undefined);
   };
+
   const handleInput = () => {
     console.log(inputValue);
     setTaskTranscription('toki ' + inputValue);
     setInputValue('');
   }
+
+  /**
+ * Convierte un archivo de audio .webm a .wav.
+ * @param {File} webmFile - El archivo .webm a convertir.
+ * @returns {Promise<Blob>} - Una promesa que resuelve con un Blob del archivo .wav.
+ */
+  const convertWebmToWav = async (webmFile) => {
+    if (!webmFile) {
+      throw new Error('No file provided');
+    }
+
+    // Leer el archivo como un ArrayBuffer
+    const arrayBuffer = await webmFile.arrayBuffer();
+
+    // Crear un AudioContext
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Decodificar los datos de audio
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+    // Preparar los datos de audio para la codificación WAV
+    const channelData = [];
+    for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
+      channelData.push(audioBuffer.getChannelData(i));
+    }
+
+    // Codificar los datos a formato WAV
+    const wavBuffer = await encode({
+      sampleRate: audioBuffer.sampleRate,
+      channelData,
+    });
+
+    // Crear un Blob con los datos WAV
+    return new Blob([wavBuffer], { type: 'audio/wav' });
+  };
 
   useEffect(() => {
     console.log("useEffect: responseResult", responseResult);

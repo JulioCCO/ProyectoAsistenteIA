@@ -4,10 +4,19 @@ import whisper
 from flask import Flask, redirect, request, jsonify
 from flask_cors import CORS
 from dataModels.model import DataLoader
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from tensorflow import keras
+import numpy as np
+from flask import Flask, request, jsonify
+from tensorflow.keras.optimizers import Adam, Adamax
+from PIL import Image
 # Abrir el archivo key.txt en modo lectura
 
 from fer import FER
 import matplotlib.pyplot as plt
+
+print(tf.__version__)
 
 with open('key.txt', 'r') as f:
     # Leer la primera línea y quitar espacios en blanco adicionales
@@ -136,12 +145,12 @@ def getAudioTask():
             # Obtener el archivo enviado
             audio_file = request.files['file']
 
-            audio_file.save(f'audios/{audio_file.filename}.mp3')
+            audio_file.save(f'audios/{audio_file.filename}.wav')
 
             # Devolver una respuesta exitosa si es necesario
-            path = r"audios\blob.mp3"
+            path = r"audios\blob.wav"
             print('path: ', path)
-            text = transcribe_audio(path)
+            text = predict_single_sample(path)
 
             return {'message': 'Archivo de audio recibido correctamente', 'transcription': text}, 200
         except Exception as e:
@@ -153,6 +162,7 @@ def getAudioTask():
 def upload_image():
     if request.method == 'POST':
         try:
+
             # Verificar si se envió un archivo
             if 'image' not in request.files:
                 return 'No se envió ninguna imagen', 400
@@ -167,7 +177,10 @@ def upload_image():
             path = f'images/{image_file.filename}'
             print('path: ', path)
 
-            jsonInfo = processEmotion(path)
+            #jsonInfo = processEmotion(path)
+
+            jsonInfo = processEmotionLuz()
+
             print('text: ', jsonInfo)
             return {'message': 'Imagen recibida correctamente', 'image_path': jsonInfo}, 200
         except Exception as e:
@@ -205,16 +218,17 @@ def processEmotion(ruta):
         # Capture all the emotions on the image
         captured_emotions = emo_detector.detect_emotions(test_image_one)
         # Print all captured emotions with the image
-        print(captured_emotions[0]['emotions'])
+        #print(captured_emotions[0]['emotions'])
         plt.imshow(test_image_one)
 
         # Use the top Emotion() function to call for the dominant emotion in the image
         dominant_emotion, emotion_score = emo_detector.top_emotion(test_image_one)
-        print(dominant_emotion, emotion_score)
+        #print(dominant_emotion, emotion_score)
 
         # Convertir el diccionario de emociones en una lista de tuplas (emoción, valor)
         emotions_list = [(emotion, value) for emotion, value in captured_emotions[0]['emotions'].items()]
 
+        #print({'emotions': emotions_list, 'dominant_emotion': dominant_emotion})
         return {'emotions': emotions_list, 'dominant_emotion': dominant_emotion}
 
     except Exception as e:
@@ -223,5 +237,103 @@ def processEmotion(ruta):
         return None
 
 
+def processEmotionLuz():
+    try:
+        print('antes de cargar el modelo')
+        loaded_model = tf.keras.models.load_model('dataModels/models/emotions.h5', compile=False)
+        loaded_model.compile(Adamax(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+
+        print('despues de cargar el modelo')
+
+        path = r"images\blob"
+        image = Image.open(path)
+
+        img = image.resize((100, 100))  # Redimensionar la imagen a 100x100 (según el tamaño utilizado en el modelo)
+        img_array = tf.keras.preprocessing.image.img_to_array(img)  # Convertir la imagen a un array
+        img_array = np.expand_dims(img_array, axis=0)  # Añadir una dimensión adicional para la muestra (batch)
+
+        img_array = img_array / 255.0
+        predictions = loaded_model.predict(img_array)
+        predicted_index = np.argmax(predictions[0])
+        class_labels = ['Angry', 'Disgust', 'Fear', 'Happiness', 'Neutral', 'Sad', 'Surprise']
+        predicted_label = class_labels[predicted_index]
+
+        # Crear una lista de tuplas (emoción, valor de predicción)
+        emotions_list = [(class_labels[i].lower(), float(predictions[0][i])) for i in range(len(class_labels))]
+
+        # Encontrar la emoción dominante
+        dominant_emotion = predicted_label.lower()
+
+        print(f"emotions_list: {emotions_list}")
+        print(f"dominant_emotion: {dominant_emotion}")
+
+        return {'emotions': emotions_list, 'dominant_emotion': dominant_emotion}
+
+    except Exception as e:
+        # Manejar excepciones e imprimir el mensaje de error
+        print(f"Error al procesar las emociones: {e}")
+        return None
+
+def CTCLoss(y_true, y_pred):
+    # Compute the training-time loss value
+    batch_len = tf.cast(tf.shape(y_true)[0], dtype="int64")
+    input_length = tf.cast(tf.shape(y_pred)[1], dtype="int64")
+    label_length = tf.cast(tf.shape(y_true)[1], dtype="int64")
+
+    input_length = input_length * tf.ones(shape=(batch_len, 1), dtype="int64")
+    label_length = label_length * tf.ones(shape=(batch_len, 1), dtype="int64")
+
+    loss = keras.backend.ctc_batch_cost(y_true, y_pred, input_length, label_length)
+    return loss
+
+
+# Cargar el modelo entrenado
+model = load_model('dataModels/models/speech_to_text.h5', custom_objects={"CTCLoss": CTCLoss})
+
+# The set of characters accepted in the transcription.
+characters = [x for x in "abcdefghijklmnopqrstuvwxyz'?! "]
+# Mapping characters to integers
+char_to_num = keras.layers.StringLookup(vocabulary=characters, oov_token="")
+# Mapping integers back to original characters
+num_to_char = keras.layers.StringLookup(
+    vocabulary=char_to_num.get_vocabulary(), oov_token="", invert=True
+)
+
+# Función para preprocesar una muestra individual
+def preprocess_single_sample(wav_file):
+    file = tf.io.read_file(wav_file)
+    audio, sample_rate = tf.audio.decode_wav(file, desired_channels=1)
+    audio = tf.squeeze(audio, axis=-1)
+    audio = tf.cast(audio, tf.float32)
+    spectrogram = tf.signal.stft(audio, frame_length=256, frame_step=160, fft_length=384)
+    spectrogram = tf.abs(spectrogram)
+    spectrogram = tf.math.pow(spectrogram, 0.5)
+    means = tf.math.reduce_mean(spectrogram, 1, keepdims=True)
+    stddevs = tf.math.reduce_std(spectrogram, 1, keepdims=True)
+    spectrogram = (spectrogram - means) / (stddevs + 1e-10)
+    spectrogram = tf.expand_dims(spectrogram, axis=0)
+    return spectrogram
+
+# Función para decodificar la predicción individual usando la lógica de batch
+def decode_single_prediction(pred):
+    input_len = np.ones(pred.shape[0]) * pred.shape[1]
+    results = keras.backend.ctc_decode(pred, input_length=input_len, greedy=True)[0][0]
+    result = tf.strings.reduce_join(num_to_char(results[0])).numpy().decode("utf-8")
+    return result
+
+# Función para predecir una muestra individual
+def predict_single_sample(wav_file):
+    spectrogram = preprocess_single_sample(wav_file)
+    prediction = model.predict(spectrogram)
+    decoded_prediction = decode_single_prediction(prediction)
+    if os.path.exists(wav_file):
+        # Eliminar el archivo
+        os.remove(wav_file)
+        print(f"El archivo {wav_file} ha sido eliminado correctamente.")
+    else:
+        print(f"El archivo {wav_file} no existe.")
+    return decoded_prediction
+
 if __name__ == "__main__":
     app.run(debug=True)
+    getAudioTask()

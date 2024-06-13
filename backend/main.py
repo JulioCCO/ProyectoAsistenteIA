@@ -9,12 +9,14 @@ from tensorflow.keras.models import load_model
 from tensorflow import keras
 import numpy as np
 from flask import Flask, request, jsonify
-
-
+from tensorflow.keras.optimizers import Adam, Adamax
+from PIL import Image
 # Abrir el archivo key.txt en modo lectura
 
 from fer import FER
 import matplotlib.pyplot as plt
+
+print(tf.__version__)
 
 with open('key.txt', 'r') as f:
     # Leer la primera línea y quitar espacios en blanco adicionales
@@ -160,6 +162,7 @@ def getAudioTask():
 def upload_image():
     if request.method == 'POST':
         try:
+
             # Verificar si se envió un archivo
             if 'image' not in request.files:
                 return 'No se envió ninguna imagen', 400
@@ -174,7 +177,10 @@ def upload_image():
             path = f'images/{image_file.filename}'
             print('path: ', path)
 
-            jsonInfo = processEmotion(path)
+            #jsonInfo = processEmotion(path)
+
+            jsonInfo = processEmotionLuz()
+
             print('text: ', jsonInfo)
             return {'message': 'Imagen recibida correctamente', 'image_path': jsonInfo}, 200
         except Exception as e:
@@ -212,16 +218,17 @@ def processEmotion(ruta):
         # Capture all the emotions on the image
         captured_emotions = emo_detector.detect_emotions(test_image_one)
         # Print all captured emotions with the image
-        print(captured_emotions[0]['emotions'])
+        #print(captured_emotions[0]['emotions'])
         plt.imshow(test_image_one)
 
         # Use the top Emotion() function to call for the dominant emotion in the image
         dominant_emotion, emotion_score = emo_detector.top_emotion(test_image_one)
-        print(dominant_emotion, emotion_score)
+        #print(dominant_emotion, emotion_score)
 
         # Convertir el diccionario de emociones en una lista de tuplas (emoción, valor)
         emotions_list = [(emotion, value) for emotion, value in captured_emotions[0]['emotions'].items()]
 
+        #print({'emotions': emotions_list, 'dominant_emotion': dominant_emotion})
         return {'emotions': emotions_list, 'dominant_emotion': dominant_emotion}
 
     except Exception as e:
@@ -229,6 +236,43 @@ def processEmotion(ruta):
         print(f"Error al calcular emociones: {e}")
         return None
 
+
+def processEmotionLuz():
+    try:
+        print('antes de cargar el modelo')
+        loaded_model = tf.keras.models.load_model('dataModels/models/emotions.h5', compile=False)
+        loaded_model.compile(Adamax(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+
+        print('despues de cargar el modelo')
+
+        path = r"images\blob"
+        image = Image.open(path)
+
+        img = image.resize((100, 100))  # Redimensionar la imagen a 100x100 (según el tamaño utilizado en el modelo)
+        img_array = tf.keras.preprocessing.image.img_to_array(img)  # Convertir la imagen a un array
+        img_array = np.expand_dims(img_array, axis=0)  # Añadir una dimensión adicional para la muestra (batch)
+
+        img_array = img_array / 255.0
+        predictions = loaded_model.predict(img_array)
+        predicted_index = np.argmax(predictions[0])
+        class_labels = ['Angry', 'Disgust', 'Fear', 'Happiness', 'Neutral', 'Sad', 'Surprise']
+        predicted_label = class_labels[predicted_index]
+
+        # Crear una lista de tuplas (emoción, valor de predicción)
+        emotions_list = [(class_labels[i].lower(), float(predictions[0][i])) for i in range(len(class_labels))]
+
+        # Encontrar la emoción dominante
+        dominant_emotion = predicted_label.lower()
+
+        print(f"emotions_list: {emotions_list}")
+        print(f"dominant_emotion: {dominant_emotion}")
+
+        return {'emotions': emotions_list, 'dominant_emotion': dominant_emotion}
+
+    except Exception as e:
+        # Manejar excepciones e imprimir el mensaje de error
+        print(f"Error al procesar las emociones: {e}")
+        return None
 
 def CTCLoss(y_true, y_pred):
     # Compute the training-time loss value

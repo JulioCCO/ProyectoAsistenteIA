@@ -296,7 +296,7 @@ export const App = () => {
 
   useEffect(() => {
     if (taskTranscription !== undefined) {
-      console.log("useEffect: taskTranscription", taskTranscription);
+      console.log("taskTranscription useEffect: ", taskTranscription);
       handleTypeOfModel();
     }
   }, [taskTranscription]);

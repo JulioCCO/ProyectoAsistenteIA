@@ -136,19 +136,19 @@ def hello_world():
 def getAudioTask():
     if request.method == 'POST':
         try:
-            # # Verificar si se envió un archivo
-            # if 'file' not in request.files:
-            #     return 'No se envió ningún archivo', 400
-            #
-            # # Obtener el archivo enviado
-            # audio_file = request.files['file']
-            #
-            # audio_file.save(f'audios/{audio_file.filename}.mp3')
+            # Verificar si se envió un archivo
+            if 'file' not in request.files:
+                return 'No se envió ningún archivo', 400
+
+            # Obtener el archivo enviado
+            audio_file = request.files['file']
+
+            audio_file.save(f'audios/{audio_file.filename}.wav')
 
             # Devolver una respuesta exitosa si es necesario
-            path = r"audios\test.wav"
+            path = r"audios\blob.wav"
             print('path: ', path)
-            text = predict_text_from_audio(path)
+            text = predict_single_sample(path)
 
             return {'message': 'Archivo de audio recibido correctamente', 'transcription': text}, 200
         except Exception as e:
@@ -246,11 +246,6 @@ def CTCLoss(y_true, y_pred):
 # Cargar el modelo entrenado
 model = load_model('dataModels/models/speech_to_text.h5', custom_objects={"CTCLoss": CTCLoss})
 
-# Parámetros de preprocesamiento
-frame_length = 256
-frame_step = 160
-fft_length = 384
-
 # The set of characters accepted in the transcription.
 characters = [x for x in "abcdefghijklmnopqrstuvwxyz'?! "]
 # Mapping characters to integers
@@ -260,38 +255,40 @@ num_to_char = keras.layers.StringLookup(
     vocabulary=char_to_num.get_vocabulary(), oov_token="", invert=True
 )
 
-# Define the function to encode a single sample
-def encode_single_sample(wav_file):
-    audio, sample_rate = tf.audio.decode_wav(wav_file, desired_channels=1)
-    audio = tf.squeeze(audio, axis=-1)  # Ensure it's a 1-D tensor
-
+# Función para preprocesar una muestra individual
+def preprocess_single_sample(wav_file):
+    file = tf.io.read_file(wav_file)
+    audio, sample_rate = tf.audio.decode_wav(file, desired_channels=1)
+    audio = tf.squeeze(audio, axis=-1)
     audio = tf.cast(audio, tf.float32)
-    spectrogram = tf.signal.stft(
-        audio, frame_length=frame_length, frame_step=frame_step, fft_length=fft_length
-    )
+    spectrogram = tf.signal.stft(audio, frame_length=256, frame_step=160, fft_length=384)
     spectrogram = tf.abs(spectrogram)
     spectrogram = tf.math.pow(spectrogram, 0.5)
     means = tf.math.reduce_mean(spectrogram, 1, keepdims=True)
     stddevs = tf.math.reduce_std(spectrogram, 1, keepdims=True)
     spectrogram = (spectrogram - means) / (stddevs + 1e-10)
-
+    spectrogram = tf.expand_dims(spectrogram, axis=0)
     return spectrogram
 
-# Define the function to predict text from audio
-def predict_text_from_audio(file_path):
-    with open(file_path, 'rb') as f:
-        wav_file = f.read()
-    spectrogram = encode_single_sample(wav_file)
-    spectrogram = tf.expand_dims(spectrogram, axis=0)  # Add batch dimension
-    prediction = model.predict(spectrogram)
-    # Decode the prediction using CTC decoder
-    input_length = np.ones(prediction.shape[0]) * prediction.shape[1]
-    decoded = tf.keras.backend.ctc_decode(prediction, input_length=input_length)[0][0]
-    decoded = tf.keras.backend.get_value(decoded)
+# Función para decodificar la predicción individual usando la lógica de batch
+def decode_single_prediction(pred):
+    input_len = np.ones(pred.shape[0]) * pred.shape[1]
+    results = keras.backend.ctc_decode(pred, input_length=input_len, greedy=True)[0][0]
+    result = tf.strings.reduce_join(num_to_char(results[0])).numpy().decode("utf-8")
+    return result
 
-    text = ''.join([num_to_char(x).numpy().decode('utf-8') for x in decoded[0] if x != -1])
-    print(text)
-    return text
+# Función para predecir una muestra individual
+def predict_single_sample(wav_file):
+    spectrogram = preprocess_single_sample(wav_file)
+    prediction = model.predict(spectrogram)
+    decoded_prediction = decode_single_prediction(prediction)
+    if os.path.exists(wav_file):
+        # Eliminar el archivo
+        os.remove(wav_file)
+        print(f"El archivo {wav_file} ha sido eliminado correctamente.")
+    else:
+        print(f"El archivo {wav_file} no existe.")
+    return decoded_prediction
 
 if __name__ == "__main__":
     app.run(debug=True)
